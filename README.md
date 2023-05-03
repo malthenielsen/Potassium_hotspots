@@ -1,5 +1,5 @@
 # Local changes in potassium ions modulate dendritic integration
-## Local $[K^+]_o$ changes modulate dendritic integration
+
 
 Figure 1 was primarly generated using the folder "ionic_change". 
 * Ptest.py generates samples of dendritic segments and computes the factor curve
