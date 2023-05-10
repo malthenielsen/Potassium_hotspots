@@ -38,7 +38,7 @@ def clustered_segment(stim_alpha):
     weights = np.zeros(n_syn)
     ori = np.zeros(n_syn)
     for i in range(n_syn):
-        disp = 1/np.power(np.radians(11)*2)
+        disp = 1/np.power(np.radians(11)*2, 2)
         rvs = stats.vonmises.rvs(kappa = disp, loc = 0, size = 1)[0]
         #weights[i] = tuning_vm(rvs, 11, stim_alpha)
         weights[i] = 1
@@ -85,7 +85,8 @@ N_clusters = np.random.poisson(32, 1)
 N_mixed = 0#np.random.poisson(20,1)
 
 if sys.argv[2] == 'single':
-    dend_clust = [30]
+    dend_clust = [-1]
+    mixed_clust = []
 else:
     dend_clust = np.random.choice(np.arange(60,120,1),N_clusters, replace = False)
     mixed_clust = np.random.choice(np.arange(60,120,1),N_mixed, replace = False)
@@ -128,7 +129,7 @@ for d in dend_clust:
         char[i,2] = weights[i-iterator]
         char[i,3] = ori[i-iterator]
         stim = np.random.poisson(30,1)
-        stim_vec = np.hstack([stim[0] + 500, stim[0] + 800, stim[0] + 1200])
+        stim_vec = np.hstack([stim[0] + 100, stim[0] + 400, stim[0] + 700])
         stim_vec += RF
         stimV.append(stim_vec)
     iterator += n_syn
@@ -182,8 +183,9 @@ VecStim = np.zeros((1000,15))
 for i in range(len(stimV)):
     VecStim[i,:len(stimV[i])] = stimV[i]
 
-np.save(f'bin/3VecFrac_{ID}', VecStim)
-np.save(f'bin/3CharFrac_{ID}', char)
+print('call')
+np.save(f'./bin/3VecFrac_{ID}', VecStim)
+np.save(f'./bin/3CharFrac_{ID}', char)
 
 #  fig, ax = plt.subplots(1,1, figsize = (8,6))
 #  ax.hist(

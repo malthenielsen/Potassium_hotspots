@@ -37,7 +37,7 @@ def create_dend(name, L):
     dend.insert('Ih')
     dend.ek = -85
     dend.ena = 50
-    dend.cm = 2
+    dend.cm = 1
     dend.g_pas = .6e-4
     dend.decay_CaDynamics_E2 = 35.725651
     dend.gamma_CaDynamics_E2 = 0.000637
@@ -45,11 +45,11 @@ def create_dend(name, L):
     dend.gCa_HVAbar_Ca_HVA = 7.01e-4 
     dend.gCa_LVAstbar_Ca_LVAst = 22.7e-4 
     dend.gSKv3_1bar_SKv3_1 = 18.08e-4
-    dend.gNaTs2_tbar_NaTs2_t = 0.021489
+    dend.gNaTs2_tbar_NaTs2_t = 0.021489*.01
     dend.gImbar_Im = 9.9e-4
     dend.gIhbar_Ih =  1.5e-4
     dend.e_pas = -70
-    dend.diam = define_diam(L)
+    #dend.diam = define_diam(L)
     return dend
 
 def create_trunk(name, L):
@@ -89,34 +89,80 @@ def create_soma(name):
     soma = h.Section(name = name)
     soma.nseg = 11
     soma.Ra = 100
-    soma.insert('Im') 
-    soma.insert('Ca_LVAst') 
-    soma.insert('Ca_HVA')
-    soma.insert('CaDynamics_E2') 
+    soma.insert('Im')
+    soma.insert('Ih')
+    soma.insert('K_Tst')
+    soma.insert('Nap_Et2')
+    soma.insert('NaTa_t')
     soma.insert('SK_E2')
     soma.insert('SKv3_1')
-    soma.insert('NaTs2_t')
+    #  soma.insert('NaTs2_t')
+    soma.insert('CaDynamics_E2')
+    soma.insert('K_Pst')
+    soma.insert('Ca_LVAst')
     soma.ek = -85
     soma.ena = 50
-    soma.insert('Ih')
     soma.insert('pas')
-    soma.gIhbar_Ih = 0.0001*0.75
     soma.g_pas = .3e-5
-    soma.gImbar_Im = 0.08e-4
-    soma.decay_CaDynamics_E2 = 294.679571#*2/3 
-    soma.gamma_CaDynamics_E2 = 0.000509 
-    soma.gCa_LVAstbar_Ca_LVAst = 0.000557 
-    soma.gCa_HVAbar_Ca_HVA = 0.000644 
-    soma.gSK_E2bar_SK_E2 = 0.0965
-    soma.gSKv3_1bar_SKv3_1 = .438029
-    soma.vshift_SKv3_1 = -20
-    soma.vshift_SK_E2 = -20
-    soma.gNaTs2_tbar_NaTs2_t = 1*0.998912
-    soma.vshift_NaTs2_t = -0 
+    #  soma.gImbar_Im = 1.5e-3
+    soma.gIhbar_Ih = 0.0002
+    soma.decay_CaDynamics_E2 = 460.725651
+    soma.gamma_CaDynamics_E2 = 0.000501
+    soma.gK_Tstbar_K_Tst = 0.0812
+    soma.gK_Pstbar_K_Pst = 0.0023
+    soma.gCa_LVAstbar_Ca_LVAst = 0.000343
+    soma.gSK_E2bar_SK_E2 = 0.0441
+    soma.gSKv3_1bar_SKv3_1 = 0.22
+    #  soma.vshift_SKv3_1 = -2
+    #  soma.vshift_SK_E2 = -2
+    #  soma.gNaTs2_tbar_NaTs2_t = 3*2.04
+    soma.gNap_Et2bar_Nap_Et2 = 0*0.00172
+    soma.gNaTa_tbar_NaTa_t = 0*2.04
+    #soma.vshift_NaTs2_t = -0 
 
-    soma.e_pas = -70
+    soma.e_pas = -90
     soma.cm = 1
-    soma.diam = 30
+    soma.diam = 10
     soma.L = 30
     return soma
 
+def goodonecreate_soma(name):
+    soma = h.Section(name = name)
+    soma.nseg = 11
+    soma.Ra = 100
+    soma.insert('Im')
+    soma.insert('Ih')
+    soma.insert('K_Tst')
+    soma.insert('Nap_Et2')
+    soma.insert('NaTa_t')
+    soma.insert('SK_E2')
+    soma.insert('SKv3_1')
+    #  soma.insert('NaTs2_t')
+    soma.insert('CaDynamics_E2')
+    soma.insert('K_Pst')
+    soma.insert('Ca_LVAst')
+    soma.ek = -85
+    soma.ena = 50
+    soma.insert('pas')
+    soma.g_pas = .3e-5
+    #  soma.gImbar_Im = 1.5e-3
+    soma.gIhbar_Ih = 0.0002
+    soma.decay_CaDynamics_E2 = 460.725651
+    soma.gamma_CaDynamics_E2 = 0.000501
+    soma.gK_Tstbar_K_Tst = 0.0812
+    soma.gK_Pstbar_K_Pst = 0.0023
+    soma.gCa_LVAstbar_Ca_LVAst = 0.000343
+    soma.gSK_E2bar_SK_E2 = 0.0441
+    soma.gSKv3_1bar_SKv3_1 = 0.22
+    #  soma.vshift_SKv3_1 = -2
+    #  soma.vshift_SK_E2 = -2
+    #  soma.gNaTs2_tbar_NaTs2_t = 3*2.04
+    soma.gNap_Et2bar_Nap_Et2 = 0.00172
+    soma.gNaTa_tbar_NaTa_t = 2.04
+    #soma.vshift_NaTs2_t = -0 
+
+    soma.e_pas = -90
+    soma.cm = 1
+    soma.diam = 10
+    soma.L = 30
+    return soma
