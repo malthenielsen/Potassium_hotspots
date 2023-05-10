@@ -1,4 +1,4 @@
-# Local changes in potassium ions modulate dendritic integration
+# Local changes in potassium ions regulate input integration in active dendrites
 
 
 Figure 1 was primarly generated using the folder "ionic_change". 
