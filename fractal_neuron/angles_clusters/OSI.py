@@ -116,7 +116,6 @@ for idx , path in enumerate(paths):
     x_arr = np.arange(3)
     OSI_std = np.nanstd(OSI_arr, axis = 1)/np.sqrt(24)
     OSI_mean = np.nanmean(OSI_arr, axis = 1)
-    print(OSI_mean)
     FPS = data[:,0,:]
     FPS_mean = np.nanmean(FPS, axis =1 )
     FPS_std = np.nanstd(FPS, axis =1 )/np.sqrt(24)

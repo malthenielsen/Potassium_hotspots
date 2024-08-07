@@ -1,8 +1,9 @@
 import numpy as np
 from matplotlib import pyplot as plt
-plt.style.use('K_PAPER')
+#  plt.style.use('K_PAPER')
 from point_dendrite import *
 from multiprocessing import Pool, cpu_count
+import tqdm
 
 def create_weight_and_delay_foldover(regime, stim_alpha, N_align, w):
     np.random.seed(299)
@@ -51,55 +52,64 @@ def restart_param():
 #
 #  exit()
 
-def run(N):
-    #  mean = .7
-    #  val = np.arange(mean - .2, mean + .2, .05)
-    val = [.55, .6, .65]
+def run(i):
+    N = 8
+    mean = .7
+    val = np.arange(mean - .2, mean + .2, .05)
+    #  print(len(val))
+    #  exit()
+    #  val = [.55, .6, .65]
     #  i = i/100 + .7
     #  fig, ax = plt.subplots(1,2, figsize = (10,7))
-    for i in val:
-        delays, weights, N_syn = create_weight_and_delay_foldover('clustered', 0, N, i)
-        peak = []
-        times = []
-        k_max = np.linspace(4,10,100)
-        NMDA = []
-        for k in k_max:
-            param, E = restart_param()
-            param['weights'] = weights
-            param['N_syn'] = N_syn
-            E['K'] += k
-            data = simulation(param, E, delays, False, change = False)
-            V_baseline = np.mean(data['V'][10000:20000])
-            #  ax[0].plot(data['RT'], data['V'] - V_baseline, color = plt.cm.cool(k/10))
-            #  ax[0].set_ylim(-10,50)
-            #  ax[1].scatter(k, np.max(data['V'] - V_baseline), color = 'black')
-            peak.append(np.max(data['V']) - V_baseline)
-            Na = data['IG'][0,:]*2*np.pi*1e-4
-            if np.max(Na) > 0.0002:
-                NMDA.append(1)
-            else:
-                NMDA.append(0)
-            #  threshold = -20
-            #  if np.max(data['V']) > threshold: # Traces bellow thr is just ignored, as it it not considered a spike
-            #      first = (np.where(data['V'] > threshold)[0][0])
-            #      last = np.where(data['V'][first + 100:] < threshold)[0][0]
-            #      t_dur = data['RT'][last + first + 100] - data['RT'][first]
-            #      times.append(t_dur)
-            #  else:
-            #      times.append(0)
-        #  plt.show()
-        np.save(f'limit_dir_illu/res_{np.round(i,2)}_{N}_301', peak)
+    #  for i in val:
+        #  print(i)
+    delays, weights, N_syn = create_weight_and_delay_foldover('clustered', 0, N, val[i])
+    #  _, weights2, _ = create_weight_and_delay_foldover('clustered', 0, N, i)
+    peak = []
+    times = []
+    k_max = np.linspace(4,10,100)
+    NMDA = []
+    for k in (k_max):
+        param, E = restart_param()
+        param['weights'] = weights
+        param['weights2'] = weights*0
+        param['N_syn'] = N_syn
+        E['K'] += k
+        data = simulation(param, E, delays, False, change = False)
+        V_baseline = np.mean(data['V'][10000:20000])
+        #  ax[0].plot(data['RT'], data['V'] - V_baseline, color = plt.cm.cool(k/10))
+        #  ax[0].set_ylim(-10,50)
+        #  ax[1].scatter(k, np.max(data['V'] - V_baseline), color = 'black')
+        peak.append(np.max(data['V']) - V_baseline)
+        Na = data['IG'][0,:]*2*np.pi*1e-4
+        if np.max(Na) > 0.0002:
+            NMDA.append(1)
+        else:
+            NMDA.append(0)
+        #  threshold = -20
+        #  if np.max(data['V']) > threshold: # Traces bellow thr is just ignored, as it it not considered a spike
+        #      first = (np.where(data['V'] > threshold)[0][0])
+        #      last = np.where(data['V'][first + 100:] < threshold)[0][0]
+        #      t_dur = data['RT'][last + first + 100] - data['RT'][first]
+        #      times.append(t_dur)
+        #  else:
+        #      times.append(0)
+    #  plt.show()
+    np.save(f'limit_dir_illu/res_{np.round(i,2)}_{N}_2024', peak)
         #  np.save(f'limit_dir_monday/nmda_{np.round(i,2)}_{N}_301', NMDA)
         #  np.save(f'limit_dir_night/time_{np.round(i,2)}_{N}_301', times)
 
 #  run(8)
+#  exit()
 
-#  if __name__ == '__main__':
-    #  index = np.arange(7,10,1)
-    #  pool = Pool(cpu_count() - 5)
-    #  pool.map(run, index)
-    #  pool.close()
-    #  pool.join()
+if __name__ == '__main__':
+    index = np.arange(0,8,1)
+    pool = Pool(8)
+    pool.map(run, index)
+    pool.close()
+    pool.join()
+
+exit()
 #
 def plot(N, val):
     print(val)

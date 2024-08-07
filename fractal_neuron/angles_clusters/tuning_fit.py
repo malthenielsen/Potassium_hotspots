@@ -8,9 +8,10 @@ from scipy import stats
 from scipy.signal import find_peaks
 from iminuit import Minuit
 import sys                                             # Module to see files and folders in directories
+from appstatpy.ExternalFunctions import *
 
-from ExternalFunctions import UnbinnedLH, BinnedLH, Chi2Regression
-from ExternalFunctions import nice_string_output, add_text_to_ax   # Useful functions to print fit results on figure
+#  from ExternalFunctions import UnbinnedLH, BinnedLH, Chi2Regression
+#  from ExternalFunctions import nice_string_output, add_text_to_ax   # Useful functions to print fit results on figure
 
 print(len(np.arange(0,90,4)))
 def func(path):

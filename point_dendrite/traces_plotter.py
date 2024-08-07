@@ -10,7 +10,9 @@ def load_data(kind, angle):
     del_arr = []
     w_arr = []
     for i in range(10):
-        data = np.load(f'single_traces/data_{i}_{kind}_{angle}.npy', allow_pickle = True)
+        #  data = np.load(f'single_traces/data_{i}_{kind}_{angle}.npy', allow_pickle = True)
+        #  data = np.load(f'single_traces_2024/data_{i}_{kind}_{angle}_10_none.npy', allow_pickle = True)
+        data = np.load(f'single_traces_2024/data_{i}_{kind}_{angle}_10_NR_NONE.npy', allow_pickle = True)
         V = data.item().get('V')[::100]
         RT = data.item().get('RT')[::100]
         V_arr.append(V)
@@ -19,11 +21,17 @@ def load_data(kind, angle):
     V_arr = np.vstack(V_arr)
     return V_arr,del_arr,w_arr, RT,
 
+#  C_00, DC_00, wDC_00,  RT = load_data('clu', 0)
+#  C_22, DC_22, wDC_22,  RT = load_data('clu',22)
+#  C_45, DC_45, wDC_45,  RT = load_data('clu',45)
+#  C_67, DC_67, wDC_67,  RT = load_data('clu',67)
+#  C_90, DC_90, wDC_90,  RT = load_data('clu',90)
+
 C_00, DC_00, wDC_00,  RT = load_data('clu', 0)
-C_22, DC_22, wDC_22,  RT = load_data('clu',22)
-C_45, DC_45, wDC_45,  RT = load_data('clu',45)
-C_67, DC_67, wDC_67,  RT = load_data('clu',67)
-C_90, DC_90, wDC_90,  RT = load_data('clu',90)
+C_22, DC_22, wDC_22,  RT = load_data('clu',5)
+C_45, DC_45, wDC_45,  RT = load_data('clu',10)
+C_67, DC_67, wDC_67,  RT = load_data('clu',15)
+C_90, DC_90, wDC_90,  RT = load_data('clu',20)
              
 
 fig = plt.figure(figsize = (8, 10), layout = 'tight')
@@ -68,7 +76,7 @@ ax41.spines['left'].set_linewidth(2)
 ax41.spines['right'].set_linewidth(2)
 ax41.spines['left'].set_linestyle('--')
 ax41.spines['right'].set_linestyle('--')
-ax00.text(-0.1, 1.15, 'B', fontweight = 'bold', transform = ax00.transAxes, fontsize = 20)
+#  ax00.text(-0.1, 1.15, 'B', fontweight = 'bold', transform = ax00.transAxes, fontsize = 20)
 #  ax00.vlines(1200, -70, 0, ls = '--', lw = 2, color = 'plum')
 #  ax00.vlines(1400, -70, 0, ls = '--', lw = 2, color = 'plum')
 #  ax10.vlines(1200, -70, 0, ls = '--', lw = 2, color = 'plum')
@@ -79,16 +87,23 @@ ax00.text(-0.1, 1.15, 'B', fontweight = 'bold', transform = ax00.transAxes, font
 #  ax30.vlines(1400, -70, 0, ls = '--', lw = 2, color = 'plum')
 #  ax40.vlines(1200, -70, 0, ls = '--', lw = 2, color = 'plum')
 #  ax40.vlines(1400, -70, 0, ls = '--', lw = 2, color = 'plum')
-ax00.fill_between([1200, 1400],[-70, -70], [0,0], color = 'plum', alpha = .2)
-ax10.fill_between([1200, 1400],[-70, -70], [0,0], color = 'plum', alpha = .2)
-ax20.fill_between([1200, 1400],[-70, -70], [0,0], color = 'plum', alpha = .2)
-ax30.fill_between([1200, 1400],[-70, -70], [0,0], color = 'plum', alpha = .2)
-ax40.fill_between([1200, 1400],[-70, -70], [0,0], color = 'plum', alpha = .2)
+ax00.fill_between([1200, 1400],[-70, -70], [0,0], color = 'tab:red', alpha = .2)
+ax10.fill_between([1200, 1400],[-70, -70], [0,0], color = 'tab:red', alpha = .2)
+ax20.fill_between([1200, 1400],[-70, -70], [0,0], color = 'tab:red', alpha = .2)
+ax30.fill_between([1200, 1400],[-70, -70], [0,0], color = 'tab:red', alpha = .2)
+ax40.fill_between([1200, 1400],[-70, -70], [0,0], color = 'tab:red', alpha = .2)
+
+ax00.fill_between([200, 400],[-70, -70], [0,0], color = 'tab:blue', alpha = .2)
+ax10.fill_between([200, 400],[-70, -70], [0,0], color = 'tab:blue', alpha = .2)
+ax20.fill_between([200, 400],[-70, -70], [0,0], color = 'tab:blue', alpha = .2)
+ax30.fill_between([200, 400],[-70, -70], [0,0], color = 'tab:blue', alpha = .2)
+ax40.fill_between([200, 400],[-70, -70], [0,0], color = 'tab:blue', alpha = .2)
+
 ax00.text(50,-15, '$0^\circ$' , size = 15)
-ax10.text(50,-15, '$22^\circ$', size = 15)
-ax20.text(50,-15, '$45^\circ$', size = 15)
-ax30.text(50,-15, '$67^\circ$', size = 15)
-ax40.text(50,-15, '$90^\circ$', size = 15)
+ax10.text(50,-15, '$5^\circ$', size = 15)
+ax20.text(50,-15, '$10^\circ$', size = 15)
+ax30.text(50,-15, '$15^\circ$', size = 15)
+ax40.text(50,-15, '$20^\circ$', size = 15)
 
 for i in range(10):
     ax00.plot(RT[:], C_00[i,:], color = 'grey', alpha = .3, linewidth = .5)
@@ -98,11 +113,11 @@ for i in range(10):
     ax40.plot(RT[:], C_90[i,:], color = 'grey', alpha = .3, linewidth = .5)
 
 
-    ax01.plot(RT[1200:1400], C_00[i,1200:1400], color = 'grey', alpha = .3, linewidth = .5)
-    ax11.plot(RT[1200:1400], C_22[i,1200:1400], color = 'grey', alpha = .3, linewidth = .5)
-    ax21.plot(RT[1200:1400], C_45[i,1200:1400], color = 'grey', alpha = .3, linewidth = .5)
-    ax31.plot(RT[1200:1400], C_67[i,1200:1400], color = 'grey', alpha = .3, linewidth = .5)
-    ax41.plot(RT[1200:1400], C_90[i,1200:1400], color = 'grey', alpha = .3, linewidth = .5)
+    #  ax01.plot(RT[1200:1400], C_00[i,1200:1400], color = 'grey', alpha = .3, linewidth = .5)
+    #  ax11.plot(RT[1200:1400], C_22[i,1200:1400], color = 'grey', alpha = .3, linewidth = .5)
+    #  ax21.plot(RT[1200:1400], C_45[i,1200:1400], color = 'grey', alpha = .3, linewidth = .5)
+    #  ax31.plot(RT[1200:1400], C_67[i,1200:1400], color = 'grey', alpha = .3, linewidth = .5)
+    #  ax41.plot(RT[1200:1400], C_90[i,1200:1400], color = 'grey', alpha = .3, linewidth = .5)
 
 ax00.plot(RT[:], np.mean(C_00, axis = 0), color = 'teal', alpha = 1, linewidth = 1)
 ax10.plot(RT[:], np.mean(C_22, axis = 0), color = 'teal', alpha = 1, linewidth = 1)
@@ -110,11 +125,18 @@ ax20.plot(RT[:], np.mean(C_45, axis = 0), color = 'teal', alpha = 1, linewidth =
 ax30.plot(RT[:], np.mean(C_67, axis = 0), color = 'teal', alpha = 1, linewidth = 1)
 ax40.plot(RT[:], np.mean(C_90, axis = 0), color = 'teal', alpha = 1, linewidth = 1)
 
-ax01.plot(RT[1200:1400], np.mean(C_00[:,1200:1400], axis = 0), color = 'teal', alpha = 1, linewidth = 1)
-ax11.plot(RT[1200:1400], np.mean(C_22[:,1200:1400], axis = 0), color = 'teal', alpha = 1, linewidth = 1)
-ax21.plot(RT[1200:1400], np.mean(C_45[:,1200:1400], axis = 0), color = 'teal', alpha = 1, linewidth = 1)
-ax31.plot(RT[1200:1400], np.mean(C_67[:,1200:1400], axis = 0), color = 'teal', alpha = 1, linewidth = 1)
-ax41.plot(RT[1200:1400], np.mean(C_90[:,1200:1400], axis = 0), color = 'teal', alpha = 1, linewidth = 1)
+ax01.plot(RT[1200:1400], np.mean(C_00[:,1200:1400], axis = 0), color = 'tab:red', alpha = 1, linewidth = 1)
+ax11.plot(RT[1200:1400], np.mean(C_22[:,1200:1400], axis = 0), color = 'tab:red', alpha = 1, linewidth = 1)
+ax21.plot(RT[1200:1400], np.mean(C_45[:,1200:1400], axis = 0), color = 'tab:red', alpha = 1, linewidth = 1)
+ax31.plot(RT[1200:1400], np.mean(C_67[:,1200:1400], axis = 0), color = 'tab:red', alpha = 1, linewidth = 1)
+ax41.plot(RT[1200:1400], np.mean(C_90[:,1200:1400], axis = 0), color = 'tab:red', alpha = 1, linewidth = 1)
+
+ax01.plot(RT[1200:1400], np.mean(C_00[:,200:400], axis = 0), color = 'tab:blue', alpha = 1, linewidth = 1)
+ax11.plot(RT[1200:1400], np.mean(C_22[:,200:400], axis = 0), color = 'tab:blue', alpha = 1, linewidth = 1)
+ax21.plot(RT[1200:1400], np.mean(C_45[:,200:400], axis = 0), color = 'tab:blue', alpha = 1, linewidth = 1)
+ax31.plot(RT[1200:1400], np.mean(C_67[:,200:400], axis = 0), color = 'tab:blue', alpha = 1, linewidth = 1)
+ax41.plot(RT[1200:1400], np.mean(C_90[:,200:400], axis = 0), color = 'tab:blue', alpha = 1, linewidth = 1)
+
 ax01.set(ylim =(-70,0), xlabel = 'Time [ms]')
 ax11.set(ylim =(-70,0), xlabel = 'Time [ms]')
 ax21.set(ylim =(-70,0), xlabel = 'Time [ms]')
@@ -130,8 +152,9 @@ ax20.legend(loc = 6)
 fig.suptitle('Clustered type point dendrite Vm traces \n at different stimulation angle relative to soma prefered')
 plt.show()
 #  fig.savefig('Traces?plot', dpi = 200)
-fig.savefig('FIG_2B.svg', dpi = 400)
-fig.savefig('FIG_2B.pdf', dpi = 400)
+#  fig.savefig('FIG_2B.svg', dpi = 400)
+#  fig.savefig('FIG_S2B_GABA_random.png', dpi = 200)
+fig.savefig('FIG_S2B_GABA_random.png', dpi = 200)
 
 exit()
 

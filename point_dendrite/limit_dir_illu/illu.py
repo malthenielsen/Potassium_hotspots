@@ -3,11 +3,11 @@ from matplotlib import pyplot as plt
 #  plt.style.use('science')
 from matplotlib import rc
 #rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
-rc('font',**{'family':['Times']})
-rc('text', usetex=True)
+#  rc('font',**{'family':['Times']})
+#  rc('text', usetex=True)
 import matplotlib
-matplotlib.rcParams['pdf.fonttype'] = 42
-matplotlib.rcParams['ps.fonttype'] = 42
+#  matplotlib.rcParams['pdf.fonttype'] = 42
+#  matplotlib.rcParams['ps.fonttype'] = 42
 
 
 left, width = .25, .5
@@ -16,18 +16,19 @@ right = left + width
 top = bottom + height
 
 dek  = np.linspace(4,10, 100)
-data_40 = np.load('./res/res_0.4_8_301.npy')
-data_45 = np.load('./res/res_0.45_8_301.npy')
-data_50 = np.load('./res/res_0.5_8_301.npy')
-data_55 = np.load('./res/res_0.55_8_301.npy')
-data_60 = np.load('./res/res_0.6_8_301.npy')
-data_65 = np.load('./res/res_0.65_8_301.npy')
-data_70 = np.load('./res/res_0.7_8_301.npy')
-data_75 = np.load('./res/res_0.75_8_301.npy')
+data_40 = np.load('./res_2024/res_0.4_8_2024.npy')
+data_45 = np.load('./res_2024/res_0.45_8_2024.npy')
+data_50 = np.load('./res_2024/res_0.5_8_2024.npy')
+data_55 = np.load('./res_2024/res_0.55_8_2024.npy')
+data_60 = np.load('./res_2024/res_0.6_8_2024.npy')
+data_65 = np.load('./res_2024/res_0.65_8_2024.npy')
+data_70 = np.load('./res_2024/res_0.7_8_2024.npy')
+data_75 = np.load('./res_2024/res_0.75_8_2024.npy')
 data_80 = np.load('./res/res_0.8_8_301.npy')
 data_85 = np.load('./res/res_0.85_8_301.npy')
 
 img = np.vstack([data_40, data_45, data_50, data_55, data_60, data_65, data_70, data_75, data_80, data_85])
+print(img)
 print(img.shape)
 dek = np.linspace(0,18,100)
 tp = []

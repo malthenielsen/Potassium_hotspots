@@ -13,6 +13,7 @@ import sys                                             # Module to see files and
 
 
 def func(path):
+    print(path)
     fnames_soma = glob(f'{path}/soma?*.npy')
     fnames_trunk = glob(f'{path}/stack?*.npy')
     fnames_trunk.sort(key=os.path.getctime)
@@ -23,6 +24,7 @@ def func(path):
 
 
     data = np.zeros((3,22,len(fnames_soma)))
+    print(len(fnames_soma))
 
 
     for l, fname in enumerate(fnames_soma):
@@ -31,20 +33,29 @@ def func(path):
         for i in range(len(soma)):
             inds, _ = find_peaks(soma[i], height = 30)
             FPS_arr[i]= len(inds)
-            #  plt.plot(soma[i])
-        #  plt.show()
+            #  if i%22 == 0:
+                #  plt.plot(soma[i])
+            
         data[:,:,l] = FPS_arr.reshape(22,3).T
+    #  plt.show()
 
     mean = np.nanmean(data, axis = 2)
+    #  plt.imshow(data[:,0,:])
+    mean2 = (np.mean(data[:,0,:], axis = 1))
+    print(data[:,0,:])
+    #  plt.show()
+    #  mean = data[:,:,0]
     fwhm = []
     #  for i in range(3):
     #      cs = interpolate.CubicSpline(angles, mean[i,:])
     #      yp = cs(x_val)
     #      idx = np.argmin(np.abs(yp - .5*np.max(yp)))
     #      fwhm.append(x_val[idx])
+    #  plt.imshow(data[:,:,0], aspect = 'auto')
+    #  plt.show()
 
 
-    return mean, fwhm
+    return mean, fwhm, mean2/mean2[0]
 
 paths = ['./3frac_5050', './3frac_7525', './3frac_2575', './3frac_0100', './3frac_1000']
 paths = ['./3frac_0100', './3frac_2575', './folder', './3frac_7525', './3frac_1000']
@@ -67,22 +78,26 @@ ls = ['solid', '--', '-.', ':', (0,(1,10))]
 #  labels = ['50/50', '75/25', '25/75', '0/100', '100/0']
 #  labels = ['0/', '75/25', '25/75', '0/100', '100/0']
 for idx , path in enumerate(paths):
-    means, fwhm = func(path)
+    means, fwhm, mean2 = func(path)
+    #  print(means)
     OSI_arr = np.zeros(3)
     for i in range(3):
         OSI_arr[i] = OSI(means[i,:], angles)
     x_arr = np.arange(3)
-    print(OSI_arr)
+    #  print(OSI_arr)
     ax[1].scatter(x_arr, OSI_arr, color = plt.cm.RdPu((idx + 1)/7))
     ax[1].plot(x_arr, OSI_arr, color = plt.cm.RdPu((idx + 1)/7))
-    ax[0].scatter(x_arr, np.mean(means[:,0:3], axis = 1), color = plt.cm.RdPu((idx + 1)/7))
-    ax[0].plot(x_arr, np.mean(means[:,0:3], axis =1),color = plt.cm.RdPu((idx + 1)/7))
+    ax[0].scatter(x_arr, (mean2), color = plt.cm.RdPu((idx + 1)/7))
+    ax[0].plot(x_arr, (mean2),color = plt.cm.RdPu((idx + 1)/7))
+    #  ax[0].scatter(x_arr, np.mean(means[:,0:3], axis = 1), color = plt.cm.RdPu((idx + 1)/7))
+    #  ax[0].plot(x_arr, np.mean(means[:,0:3], axis =1),color = plt.cm.RdPu((idx + 1)/7))
     #  ax2.scatter(x_arr, fwhm, ls = ls[idx], color = 'red')
     #  ax2.plot(x_arr,    fwhm, ls = ls[idx], color = 'red')
     #  print(means[:,0])
     #  print(idx)
 ax[1].set_ylim(.8,.95)
-ax[0].set_ylim(5,35)
+#  ax[0].set_ylim(5,35)
+ax[0].set_ylim(.8,3.5)
 ax[0].set_ylabel('Peak firing rate at $0^\circ$', color = 'black')
 ax[1].set_ylabel('OSI', color = 'black')
 ax[1].set_xticks([0,1,2],['None', '$ Low \Delta E_K$', '$ High \Delta E_K$'] , rotation = 30)
