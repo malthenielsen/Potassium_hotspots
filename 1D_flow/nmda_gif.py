@@ -309,9 +309,9 @@ for i in range(1000):
         ax2.set_ylabel('Time (ms)')
         #  cb.ax.axvline( 0, c = 'white')
 
-        ax0.text(-0.1, 1.05, 'A', fontweight = 'bold', transform = ax0.transAxes, fontsize = 20)
-        ax1.text(-0.1, 1.05, 'B', fontweight = 'bold', transform = ax1.transAxes, fontsize = 20)
-        ax2.text(-0.1, 1.025, 'C', fontweight = 'bold', transform = ax2.transAxes, fontsize = 20)
+        ax0.text(-0.1, 1.05, 'a', fontweight = 'heavy', transform = ax0.transAxes, fontsize = 20)
+        ax1.text(-0.1, 1.05, 'b', fontweight = 'heavy', transform = ax1.transAxes, fontsize = 20)
+        ax2.text(-0.1, 1.025, 'c', fontweight ='heavy', transform = ax2.transAxes, fontsize = 20)
         #  ax3.text(-0.1, 1.05, 'D', fontweight = 'bold', transform = ax3.transAxes, fontsize = 20)
         #  plt.show()
         #  exit()

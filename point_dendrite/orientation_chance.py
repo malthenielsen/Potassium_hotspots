@@ -1,6 +1,6 @@
 import numpy as np
 from matplotlib import pyplot as plt
-#  plt.style.use('science')
+plt.style.use('K_PAPER')
 from scipy import stats
 import tqdm
 from scipy.interpolate import UnivariateSpline, CubicSpline
@@ -22,6 +22,8 @@ ax[0].set_ylabel('Chance for dendritic spike')
 ax[0].set_xlabel('Angle from soma prefered')
 max_height = []
 half_width = []
+
+fig2, AX = plt.subplots(1,1, figsize = (4,5))
 
 def OSI(arr, ori):
     ori = np.deg2rad(ori)
@@ -61,22 +63,34 @@ ax[0].set_title('Spike probability as function \n of stimulation angle')
 #  dek = [0,4,5, 6, 7, 8, 9, 10]
 
 #  fig2, ax2 = plt.subplots(1,1, figsize = (8,6))
+AX2 = AX.twinx()
 ax2 = ax[1].twinx()
 ax[1].errorbar(dek, max_height, label = 'probability', color = 'red', marker = 'x', ls = ':'  , lw = 2, markersize = 10)
 ax[1].set_ylim(.4, 1)
+AX.errorbar(dek, max_height, label = 'probability', color = 'black', marker = 'o', ls = '-'  , lw = 2, markersize = 10)
+AX.set_ylim(.0, 1)
+
 ax2.errorbar(dek, half_width, label = 'FWHM', color = 'blue',marker = 'x', ls = ':', lw = 2, markersize = 10)
 #  ax2.errorbar(dek, angles[half_width], label = 'FWHM', color = 'blue',marker = 'x', ls = ':', lw = 2, markersize = 10)
+AX2.errorbar(dek, half_width, label = 'FWHM', color = 'grey',marker = 'o', ls = '-', lw = 2, markersize = 10)
 ax[1].set_xlabel(r'$\Delta$$E_K$')
 ax[1].set_ylabel('Probability at soma prefered', color = 'red')
+AX.set_xlabel(r'$\Delta$$E_K$')
+AX.set_ylabel('Probability at soma prefered', color = 'red')
 ax2.set_ylabel('OSI', color = 'blue')
 ax2.set_ylim(0, 1)
 ax2.set_title('Probability distribution \n characteristics')
+AX2.set_ylabel('OSI', color = 'blue')
+AX2.set_ylim(0, 1)
+AX2.set_title('Probability distribution \n characteristics')
 #  fig2.savefig('p_dist_char')
 ax[0].text(-0.1, 1.05, 'G', fontweight = 'bold', transform = ax[0].transAxes, fontsize = 20)
 ax[1].text(-0.1, 1.05, 'H', fontweight = 'bold', transform = ax[1].transAxes, fontsize = 20)
 fig.savefig('Probability_4_spike', dpi = 200)
 fig.savefig('FIG_2GH.svg', dpi = 400)
 fig.savefig('FIG_2GH.pdf', dpi = 400)
+plt.tight_layout()
+fig2.savefig('FIG_2H.pdf', dpi = 50)
 plt.show()
 exit()
 

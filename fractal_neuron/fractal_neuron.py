@@ -24,7 +24,6 @@ def tuning_vm(arr, s = 11, shift = 0):
 def change_ek(dend_list, clust_dend, ek,mix_ek):
     '''
     Here we change EK in the vicinity of the cluster. The clusters are always located in the middle of the segment,
-    The changes might seem a bit extreeme, but that part is still work in progress. I Should not need to multiply the change by 10...
     '''
     for dend_idx in clust_dend:
         idx = 10
@@ -458,7 +457,7 @@ P_dek = np.load('P_bin1.npy')
 P_mix = np.load('P_bin_off_300.npy')
 P_mix = P_mix/P_dek.max()
 P_dek = P_dek/np.max(P_dek)
-#  plt.plot(P_mix)
+#  plt.plot(P_mix):vs
 #  plt.plot(P_dek)
 
 dek_a = interpolate.interp1d(np.linspace(0,90,45), np.nan_to_num(P_dek, 0))
@@ -476,6 +475,7 @@ def run(i):
     time.sleep(i)
     ID = int(time.time())
     soma_final = []
+    dek_r = [.8, 1, 1.2]
     for index, a in enumerate(angles):
 
         for idx, ek in enumerate(dek_r):
@@ -492,8 +492,8 @@ def run(i):
     np.save(f'./data/3frac_5050/soma_{i}', np.vstack(soma_final))
 
 if __name__ == '__main__':
-    index = np.arange(0,25,1)
-    pool = Pool(25)
+    index = np.arange(0,15,1)
+    pool = Pool(15)
     pool.map(run, index)
     pool.close()
     pool.join()

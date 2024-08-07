@@ -2,7 +2,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 #  plt.style.use('science')
 #  from create_segments_shai import *
-from create_segments_simple import *
+from create_segments import *
 h.load_file('stdrun.hoc')
 h.nrn_load_dll('./mod_shai/x86_64/libnrnmech.so')
 import subprocess
@@ -27,29 +27,31 @@ def change_ek(dend_list, clust_dend, ek,mix_ek):
     The changes might seem a bit extreeme, but that part is still work in progress. I Should not need to multiply the change by 10...
     '''
     for dend_idx in clust_dend:
-        idx = 10
-        dend_list[dend_idx-1].nseg = idx
+        #idx = 10
+        idx = dend_list[dend_idx-1].nseg
         id_list = np.arange(0,idx, 1)
         np.random.shuffle(id_list)
         cluster = int(2*idx//4)
         mixed = 0#kjint(idx//4)
         #  mixed = 0
-        idx_cluster = id_list[:cluster]
+        #  idx_cluster = id_list[:cluster]
+        idx_cluster = id_list[:idx]
+        #idx_cluster = id_list
         for index, seg in enumerate(dend_list[dend_idx-1]):
-            if index in idx_cluster:
-                if ek != 0:
-                    seg.SK_E2.dek += 1*ek
-                    seg.SKv3_1.dek += 1*ek
-                    seg.Im.dek += 1*ek
-                    seg.e_pas += .6*ek
-                    #print(seg.e_pas)
-                    #print(seg.SK_E2.dek, 'values')
-            else:
-                if ek != 0:
-                    seg.SK_E2.dek += mix_ek
-                    seg.SKv3_1.dek += mix_ek
-                    seg.Im.dek += mix_ek
-                    seg.e_pas += .6*mix_ek
+            #if index in idx_cluster:
+            if ek != 0:
+                seg.SK_E2.dek += 1*ek
+                seg.SKv3_1.dek += 1*ek
+                seg.Im.dek += 1*ek
+                seg.e_pas += .6*ek
+                #print(seg.e_pas)
+                #print(seg.SK_E2.dek, 'values')
+          # else:
+          #     if ek != 0:
+          #         seg.SK_E2.dek += mix_ek
+          #         seg.SKv3_1.dek += mix_ek
+          #         seg.Im.dek += mix_ek
+          #         seg.e_pas += .6*mix_ek
     return dend_list
 
 
@@ -68,7 +70,7 @@ def create_neuron(tL, dek, mix_dek, stim_alpha, not_keep, test = 0, ID = 1, AMP 
     '''
     if not_keep:
         print('made new')
-        subprocess.call(f"python3 3fractal_prep_test.py {stim_alpha} {test} {ID}", shell=True)
+        subprocess.call(f"python3 fractal_prep_test.py {stim_alpha} {test} {ID}", shell=True)
 
     char_arr = np.load(f'bin/3CharFrac_{ID}.npy') 
     StimVec = np.load(f'bin/3VecFrac_{ID}.npy')
@@ -76,133 +78,135 @@ def create_neuron(tL, dek, mix_dek, stim_alpha, not_keep, test = 0, ID = 1, AMP 
     #Creating the neuron in the fractal manner
     #Namin as dend_XXY where XX is the segment number and Y is the level in the fractal
 
-    dend_1  = create_dend(name = 'dend_1', L = 160)
-    dend_2  = create_dend(name = 'dend_2', L = 160)
-    dend_3  = create_dend(name = 'dend_3', L = 160)
+    brick = tL//25
 
-    dend_11  = create_dend(name = 'dend_11', L = 80)
-    dend_12  = create_dend(name = 'dend_12', L = 80)
-    dend_13  = create_dend(name = 'dend_13', L = 80)
-    dend_21  = create_dend(name = 'dend_21', L = 80)
-    dend_22  = create_dend(name = 'dend_22', L = 80)
-    dend_23  = create_dend(name = 'dend_23', L = 80)
-    dend_31  = create_dend(name = 'dend_31', L = 80)
-    dend_32  = create_dend(name = 'dend_32', L = 80)
-    dend_33  = create_dend(name = 'dend_33', L = 80)
+    dend_1  = create_dend(name = 'dend_1', L = brick*8)
+    dend_2  = create_dend(name = 'dend_2', L = brick*8)
+    dend_3  = create_dend(name = 'dend_3', L = brick*8)
 
-    dend_111 = create_dend(name = 'dend_111', L = 40)
-    dend_121 = create_dend(name = 'dend_121', L = 40)
-    dend_131 = create_dend(name = 'dend_131', L = 40)
-    dend_211 = create_dend(name = 'dend_211', L = 40)
-    dend_221 = create_dend(name = 'dend_221', L = 40)
-    dend_231 = create_dend(name = 'dend_231', L = 40)
-    dend_311 = create_dend(name = 'dend_311', L = 40)
-    dend_321 = create_dend(name = 'dend_321', L = 40)
-    dend_331 = create_dend(name = 'dend_331', L = 40)
-    dend_112 = create_dend(name = 'dend_112', L = 40)
-    dend_122 = create_dend(name = 'dend_122', L = 40)
-    dend_132 = create_dend(name = 'dend_132', L = 40)
-    dend_212 = create_dend(name = 'dend_212', L = 40)
-    dend_222 = create_dend(name = 'dend_222', L = 40)
-    dend_232 = create_dend(name = 'dend_232', L = 40)
-    dend_312 = create_dend(name = 'dend_312', L = 40)
-    dend_322 = create_dend(name = 'dend_322', L = 40)
-    dend_332 = create_dend(name = 'dend_332', L = 40)
-    dend_113 = create_dend(name = 'dend_113', L = 40)
-    dend_123 = create_dend(name = 'dend_123', L = 40)
-    dend_133 = create_dend(name = 'dend_133', L = 40)
-    dend_213 = create_dend(name = 'dend_213', L = 40)
-    dend_223 = create_dend(name = 'dend_223', L = 40)
-    dend_233 = create_dend(name = 'dend_233', L = 40)
-    dend_313 = create_dend(name = 'dend_313', L = 40)
-    dend_323 = create_dend(name = 'dend_323', L = 40)
-    dend_333 = create_dend(name = 'dend_333', L = 40)
+    dend_11  = create_dend(name = 'dend_11', L = brick*4)
+    dend_12  = create_dend(name = 'dend_12', L = brick*4)
+    dend_13  = create_dend(name = 'dend_13', L = brick*4)
+    dend_21  = create_dend(name = 'dend_21', L = brick*4)
+    dend_22  = create_dend(name = 'dend_22', L = brick*4)
+    dend_23  = create_dend(name = 'dend_23', L = brick*4)
+    dend_31  = create_dend(name = 'dend_31', L = brick*4)
+    dend_32  = create_dend(name = 'dend_32', L = brick*4)
+    dend_33  = create_dend(name = 'dend_33', L = brick*4)
 
-    dend_1111 = create_dend(name = 'dend_1111', L = 20)
-    dend_1211 = create_dend(name = 'dend_1211', L = 20)
-    dend_1311 = create_dend(name = 'dend_1311', L = 20)
-    dend_2111 = create_dend(name = 'dend_2111', L = 20)
-    dend_2211 = create_dend(name = 'dend_2211', L = 20)
-    dend_2311 = create_dend(name = 'dend_2311', L = 20)
-    dend_3111 = create_dend(name = 'dend_3111', L = 20)
-    dend_3211 = create_dend(name = 'dend_3211', L = 20)
-    dend_3311 = create_dend(name = 'dend_3311', L = 20)
-    dend_1121 = create_dend(name = 'dend_1121', L = 20)
-    dend_1221 = create_dend(name = 'dend_1221', L = 20)
-    dend_1321 = create_dend(name = 'dend_1321', L = 20)
-    dend_2121 = create_dend(name = 'dend_2121', L = 20)
-    dend_2221 = create_dend(name = 'dend_2221', L = 20)
-    dend_2321 = create_dend(name = 'dend_2321', L = 20)
-    dend_3121 = create_dend(name = 'dend_3121', L = 20)
-    dend_3221 = create_dend(name = 'dend_3221', L = 20)
-    dend_3321 = create_dend(name = 'dend_3321', L = 20)
-    dend_1131 = create_dend(name = 'dend_1131', L = 20)
-    dend_1231 = create_dend(name = 'dend_1231', L = 20)
-    dend_1331 = create_dend(name = 'dend_1331', L = 20)
-    dend_2131 = create_dend(name = 'dend_2131', L = 20)
-    dend_2231 = create_dend(name = 'dend_2231', L = 20)
-    dend_2331 = create_dend(name = 'dend_2331', L = 20)
-    dend_3131 = create_dend(name = 'dend_3131', L = 20)
-    dend_3231 = create_dend(name = 'dend_3231', L = 20)
-    dend_3331 = create_dend(name = 'dend_3331', L = 20)
-    dend_1112 = create_dend(name = 'dend_1112', L = 20)
-    dend_1212 = create_dend(name = 'dend_1212', L = 20)
-    dend_1312 = create_dend(name = 'dend_1312', L = 20)
-    dend_2112 = create_dend(name = 'dend_2112', L = 20)
-    dend_2212 = create_dend(name = 'dend_2212', L = 20)
-    dend_2312 = create_dend(name = 'dend_2312', L = 20)
-    dend_3112 = create_dend(name = 'dend_3112', L = 20)
-    dend_3212 = create_dend(name = 'dend_3212', L = 20)
-    dend_3312 = create_dend(name = 'dend_3312', L = 20)
-    dend_1122 = create_dend(name = 'dend_1122', L = 20)
-    dend_1222 = create_dend(name = 'dend_1222', L = 20)
-    dend_1322 = create_dend(name = 'dend_1322', L = 20)
-    dend_2122 = create_dend(name = 'dend_2122', L = 20)
-    dend_2222 = create_dend(name = 'dend_2222', L = 20)
-    dend_2322 = create_dend(name = 'dend_2322', L = 20)
-    dend_3122 = create_dend(name = 'dend_3122', L = 20)
-    dend_3222 = create_dend(name = 'dend_3222', L = 20)
-    dend_3322 = create_dend(name = 'dend_3322', L = 20)
-    dend_1132 = create_dend(name = 'dend_1132', L = 20)
-    dend_1232 = create_dend(name = 'dend_1232', L = 20)
-    dend_1332 = create_dend(name = 'dend_1332', L = 20)
-    dend_2132 = create_dend(name = 'dend_2132', L = 20)
-    dend_2232 = create_dend(name = 'dend_2232', L = 20)
-    dend_2332 = create_dend(name = 'dend_2332', L = 20)
-    dend_3132 = create_dend(name = 'dend_3132', L = 20)
-    dend_3232 = create_dend(name = 'dend_3232', L = 20)
-    dend_3332 = create_dend(name = 'dend_3332', L = 20)
-    dend_1113 = create_dend(name = 'dend_1113', L = 20)
-    dend_1213 = create_dend(name = 'dend_1213', L = 20)
-    dend_1313 = create_dend(name = 'dend_1313', L = 20)
-    dend_2113 = create_dend(name = 'dend_2113', L = 20)
-    dend_2213 = create_dend(name = 'dend_2213', L = 20)
-    dend_2313 = create_dend(name = 'dend_2313', L = 20)
-    dend_3113 = create_dend(name = 'dend_3113', L = 20)
-    dend_3213 = create_dend(name = 'dend_3213', L = 20)
-    dend_3313 = create_dend(name = 'dend_3313', L = 20)
-    dend_1123 = create_dend(name = 'dend_1123', L = 20)
-    dend_1223 = create_dend(name = 'dend_1223', L = 20)
-    dend_1323 = create_dend(name = 'dend_1323', L = 20)
-    dend_2123 = create_dend(name = 'dend_2123', L = 20)
-    dend_2223 = create_dend(name = 'dend_2223', L = 20)
-    dend_2323 = create_dend(name = 'dend_2323', L = 20)
-    dend_3123 = create_dend(name = 'dend_3123', L = 20)
-    dend_3223 = create_dend(name = 'dend_3223', L = 20)
-    dend_3323 = create_dend(name = 'dend_3323', L = 20)
-    dend_1133 = create_dend(name = 'dend_1133', L = 20)
-    dend_1233 = create_dend(name = 'dend_1233', L = 20)
-    dend_1333 = create_dend(name = 'dend_1333', L = 20)
-    dend_2133 = create_dend(name = 'dend_2133', L = 20)
-    dend_2233 = create_dend(name = 'dend_2233', L = 20)
-    dend_2333 = create_dend(name = 'dend_2333', L = 20)
-    dend_3133 = create_dend(name = 'dend_3133', L = 20)
-    dend_3233 = create_dend(name = 'dend_3233', L = 20)
-    dend_3333 = create_dend(name = 'dend_3333', L = 20)
+    dend_111 = create_dend(name = 'dend_111', L = brick*2)
+    dend_121 = create_dend(name = 'dend_121', L = brick*2)
+    dend_131 = create_dend(name = 'dend_131', L = brick*2)
+    dend_211 = create_dend(name = 'dend_211', L = brick*2)
+    dend_221 = create_dend(name = 'dend_221', L = brick*2)
+    dend_231 = create_dend(name = 'dend_231', L = brick*2)
+    dend_311 = create_dend(name = 'dend_311', L = brick*2)
+    dend_321 = create_dend(name = 'dend_321', L = brick*2)
+    dend_331 = create_dend(name = 'dend_331', L = brick*2)
+    dend_112 = create_dend(name = 'dend_112', L = brick*2)
+    dend_122 = create_dend(name = 'dend_122', L = brick*2)
+    dend_132 = create_dend(name = 'dend_132', L = brick*2)
+    dend_212 = create_dend(name = 'dend_212', L = brick*2)
+    dend_222 = create_dend(name = 'dend_222', L = brick*2)
+    dend_232 = create_dend(name = 'dend_232', L = brick*2)
+    dend_312 = create_dend(name = 'dend_312', L = brick*2)
+    dend_322 = create_dend(name = 'dend_322', L = brick*2)
+    dend_332 = create_dend(name = 'dend_332', L = brick*2)
+    dend_113 = create_dend(name = 'dend_113', L = brick*2)
+    dend_123 = create_dend(name = 'dend_123', L = brick*2)
+    dend_133 = create_dend(name = 'dend_133', L = brick*2)
+    dend_213 = create_dend(name = 'dend_213', L = brick*2)
+    dend_223 = create_dend(name = 'dend_223', L = brick*2)
+    dend_233 = create_dend(name = 'dend_233', L = brick*2)
+    dend_313 = create_dend(name = 'dend_313', L = brick*2)
+    dend_323 = create_dend(name = 'dend_323', L = brick*2)
+    dend_333 = create_dend(name = 'dend_333', L = brick*2)
+
+    dend_1111 = create_dend(name = 'dend_1111', L = brick*1)
+    dend_1211 = create_dend(name = 'dend_1211', L = brick*1)
+    dend_1311 = create_dend(name = 'dend_1311', L = brick*1)
+    dend_2111 = create_dend(name = 'dend_2111', L = brick*1)
+    dend_2211 = create_dend(name = 'dend_2211', L = brick*1)
+    dend_2311 = create_dend(name = 'dend_2311', L = brick*1)
+    dend_3111 = create_dend(name = 'dend_3111', L = brick*1)
+    dend_3211 = create_dend(name = 'dend_3211', L = brick*1)
+    dend_3311 = create_dend(name = 'dend_3311', L = brick*1)
+    dend_1121 = create_dend(name = 'dend_1121', L = brick*1)
+    dend_1221 = create_dend(name = 'dend_1221', L = brick*1)
+    dend_1321 = create_dend(name = 'dend_1321', L = brick*1)
+    dend_2121 = create_dend(name = 'dend_2121', L = brick*1)
+    dend_2221 = create_dend(name = 'dend_2221', L = brick*1)
+    dend_2321 = create_dend(name = 'dend_2321', L = brick*1)
+    dend_3121 = create_dend(name = 'dend_3121', L = brick*1)
+    dend_3221 = create_dend(name = 'dend_3221', L = brick*1)
+    dend_3321 = create_dend(name = 'dend_3321', L = brick*1)
+    dend_1131 = create_dend(name = 'dend_1131', L = brick*1)
+    dend_1231 = create_dend(name = 'dend_1231', L = brick*1)
+    dend_1331 = create_dend(name = 'dend_1331', L = brick*1)
+    dend_2131 = create_dend(name = 'dend_2131', L = brick*1)
+    dend_2231 = create_dend(name = 'dend_2231', L = brick*1)
+    dend_2331 = create_dend(name = 'dend_2331', L = brick*1)
+    dend_3131 = create_dend(name = 'dend_3131', L = brick*1)
+    dend_3231 = create_dend(name = 'dend_3231', L = brick*1)
+    dend_3331 = create_dend(name = 'dend_3331', L = brick*1)
+    dend_1112 = create_dend(name = 'dend_1112', L = brick*1)
+    dend_1212 = create_dend(name = 'dend_1212', L = brick*1)
+    dend_1312 = create_dend(name = 'dend_1312', L = brick*1)
+    dend_2112 = create_dend(name = 'dend_2112', L = brick*1)
+    dend_2212 = create_dend(name = 'dend_2212', L = brick*1)
+    dend_2312 = create_dend(name = 'dend_2312', L = brick*1)
+    dend_3112 = create_dend(name = 'dend_3112', L = brick*1)
+    dend_3212 = create_dend(name = 'dend_3212', L = brick*1)
+    dend_3312 = create_dend(name = 'dend_3312', L = brick*1)
+    dend_1122 = create_dend(name = 'dend_1122', L = brick*1)
+    dend_1222 = create_dend(name = 'dend_1222', L = brick*1)
+    dend_1322 = create_dend(name = 'dend_1322', L = brick*1)
+    dend_2122 = create_dend(name = 'dend_2122', L = brick*1)
+    dend_2222 = create_dend(name = 'dend_2222', L = brick*1)
+    dend_2322 = create_dend(name = 'dend_2322', L = brick*1)
+    dend_3122 = create_dend(name = 'dend_3122', L = brick*1)
+    dend_3222 = create_dend(name = 'dend_3222', L = brick*1)
+    dend_3322 = create_dend(name = 'dend_3322', L = brick*1)
+    dend_1132 = create_dend(name = 'dend_1132', L = brick*1)
+    dend_1232 = create_dend(name = 'dend_1232', L = brick*1)
+    dend_1332 = create_dend(name = 'dend_1332', L = brick*1)
+    dend_2132 = create_dend(name = 'dend_2132', L = brick*1)
+    dend_2232 = create_dend(name = 'dend_2232', L = brick*1)
+    dend_2332 = create_dend(name = 'dend_2332', L = brick*1)
+    dend_3132 = create_dend(name = 'dend_3132', L = brick*1)
+    dend_3232 = create_dend(name = 'dend_3232', L = brick*1)
+    dend_3332 = create_dend(name = 'dend_3332', L = brick*1)
+    dend_1113 = create_dend(name = 'dend_1113', L = brick*1)
+    dend_1213 = create_dend(name = 'dend_1213', L = brick*1)
+    dend_1313 = create_dend(name = 'dend_1313', L = brick*1)
+    dend_2113 = create_dend(name = 'dend_2113', L = brick*1)
+    dend_2213 = create_dend(name = 'dend_2213', L = brick*1)
+    dend_2313 = create_dend(name = 'dend_2313', L = brick*1)
+    dend_3113 = create_dend(name = 'dend_3113', L = brick*1)
+    dend_3213 = create_dend(name = 'dend_3213', L = brick*1)
+    dend_3313 = create_dend(name = 'dend_3313', L = brick*1)
+    dend_1123 = create_dend(name = 'dend_1123', L = brick*1)
+    dend_1223 = create_dend(name = 'dend_1223', L = brick*1)
+    dend_1323 = create_dend(name = 'dend_1323', L = brick*1)
+    dend_2123 = create_dend(name = 'dend_2123', L = brick*1)
+    dend_2223 = create_dend(name = 'dend_2223', L = brick*1)
+    dend_2323 = create_dend(name = 'dend_2323', L = brick*1)
+    dend_3123 = create_dend(name = 'dend_3123', L = brick*1)
+    dend_3223 = create_dend(name = 'dend_3223', L = brick*1)
+    dend_3323 = create_dend(name = 'dend_3323', L = brick*1)
+    dend_1133 = create_dend(name = 'dend_1133', L = brick*1)
+    dend_1233 = create_dend(name = 'dend_1233', L = brick*1)
+    dend_1333 = create_dend(name = 'dend_1333', L = brick*1)
+    dend_2133 = create_dend(name = 'dend_2133', L = brick*1)
+    dend_2233 = create_dend(name = 'dend_2233', L = brick*1)
+    dend_2333 = create_dend(name = 'dend_2333', L = brick*1)
+    dend_3133 = create_dend(name = 'dend_3133', L = brick*1)
+    dend_3233 = create_dend(name = 'dend_3233', L = brick*1)
+    dend_3333 = create_dend(name = 'dend_3333', L = brick*1)
     
 
-    trunk = create_trunk(name = 'trunk', L = tL)
-    trunk.L = tL
+    trunk = create_trunk(name = 'trunk', L = brick*10)
+    trunk.L = brick*10
     soma = create_soma(name = 'soma')
 
     dend_1111.connect(dend_111, 1.0)
@@ -355,7 +359,7 @@ def create_neuron(tL, dek, mix_dek, stim_alpha, not_keep, test = 0, ID = 1, AMP 
     Changes the EK in the segments where a cluster is located
 
     '''
-    clust_dend = np.arange(0,120,1)
+    clust_dend = np.arange(39,120,1)
     #  clust_dend = [29, 13, 5, 1]
 
     dend_list = change_ek(dend_list, clust_dend, dek, mix_dek)
@@ -366,13 +370,14 @@ def create_neuron(tL, dek, mix_dek, stim_alpha, not_keep, test = 0, ID = 1, AMP 
     soma.gK_Tstbar_K_Tst = 0.0812 * mul
     soma.gK_Pstbar_K_Pst = 0.0023
     soma.gCa_LVAstbar_Ca_LVAst = 0.000343
-    soma.gSK_E2bar_SK_E2 = 0.0441
-    soma.gSKv3_1bar_SKv3_1 = 0.22
+    soma.gSK_E2bar_SK_E2 = 0.441
+    #soma.gSKv3_1bar_SKv3_1 = 0.22*8
+    soma.gSKv3_1bar_SKv3_1 = 0.22#*8
     #  soma.vshift_SKv3_1 = -2
     #  soma.vshift_SK_E2 = -2
     #  soma.gNaTs2_tbar_NaTs2_t = 3*2.04
-    soma.gNap_Et2bar_Nap_Et2 = 1*0.00172
-    soma.gNaTa_tbar_NaTa_t = 1*2.04
+    soma.gNap_Et2bar_Nap_Et2 = 0.00172
+    soma.gNaTa_tbar_NaTa_t = 2.04
     #soma.vshift_NaTs2_t = -0 
 
         
@@ -389,7 +394,8 @@ def create_neuron(tL, dek, mix_dek, stim_alpha, not_keep, test = 0, ID = 1, AMP 
             nmda_syn.e = 1
 
         #scalar = 50e-1
-        scalar = 30e-1
+        scalar = 15e-1
+        scalar = 15e-1
 
         '''
         Scalar is a value that is multiplied with the weight of the synapses.
@@ -448,11 +454,12 @@ def create_neuron(tL, dek, mix_dek, stim_alpha, not_keep, test = 0, ID = 1, AMP 
     '''
     t_vec = h.Vector().record(h._ref_t)
     V_vec = h.Vector().record(soma(0.0)._ref_v)
-    D_vec = h.Vector().record(trunk(0.5)._ref_v)
+    V_vec = h.Vector().record(trunk(0.5)._ref_v)
     #  print(np.mean(wbin), 'angle', stim_alpha)
 
     h.finitialize(-80)
     h.tstop = 900
+    #h.tstop = 500
     h.run()
 
 
@@ -463,11 +470,11 @@ def create_neuron(tL, dek, mix_dek, stim_alpha, not_keep, test = 0, ID = 1, AMP 
     #  ax[0].plot(t_vec, V_vec + 120*index*0)
     #  ax[1].plot(t_vec, D_vec + 120*index*0)
     V_vec = V_vec.to_python()
-    VM = np.mean(V_vec[7000:20000])
-    V_vec = V_vec - np.mean(V_vec[1000:1500])
-    AUC = np.trapz(V_vec[7000:20000])
-    inds, _ = find_peaks(V_vec)
-    FR = len(inds)
+    #VM = np.mean(V_vec[7000:20000])
+    #V_vec = V_vec - np.mean(V_vec[1000:1500])
+    #AUC = np.trapz(V_vec[7000:20000])
+    #inds, _ = find_peaks(V_vec)
+    #FR = len(inds)
     #  print(FR)
 
 
@@ -510,26 +517,30 @@ dek_a = interpolate.interp1d(np.linspace(0,90,45), np.nan_to_num(P_dek, 0))
 #  fig, ax = plt.subplots(2,1, figsize = (9,6))
 def run(i):
     angles = np.linspace(0,39,18)
-    tl = np.arange(400,1500,100)
-    tl = np.append(tl, np.array([1700, 2200, 2700, 3700]))
+    #  tl = np.arange(400,1500,100)
+    #  tl = np.append(tl, np.array([1700, 2200, 2700, 3700]))
+    #tl = np.arange(200,1500, 100)
+    tl = np.arange(50,250, 25)
+    #tl = np.arange(100,500, 25)
     time.sleep(i)
     ID = int(time.time())
     soma_final = []
     a = 0
     for index, l in enumerate(tl):
         for idx, ek in enumerate(dek_r):
-            if l == 400 and ek == 0:
+            if l == 50 and ek == 0:
                 remix = True
             else:
                 remix = 0
-            V_vec = create_neuron(l, dek_a(a), dek_r[idx], a, remix, 'ingle', ID, 0, index, 1)
+            V_vec = create_neuron(l, dek_a(a)*dek[idx], dek_r[idx], a, remix, 'ingle', ID, 0, index, 1)
             soma_final.append(V_vec)
 
-    np.save(f'./data/folder_trunk_test/soma_{i}', np.vstack(soma_final))
+    #np.save(f'./data/trace/soma_{i}', np.vstack(soma_final))
+    np.save(f'./data/length_VM/soma_{i}', np.vstack(soma_final))
 
 if __name__ == '__main__':
-    index = np.arange(0,25,1)
-    pool = Pool(25)
+    index = np.arange(0,11,1)
+    pool = Pool(11)
     pool.map(run, index)
     pool.close()
     pool.join()

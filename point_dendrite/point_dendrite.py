@@ -52,6 +52,36 @@ def I_nmda(sdict, V_ext, dt):
     syn_act_2 = g*sdict['weight']*(sdict['B'] - sdict['A'])
     return syn_act, sdict, syn_act_2
 
+#  def I_gaba(sdict, V_ext, dt):
+#      VCa = -27.6*np.log(1.5/0.001)/2
+#      fv = 1 / ( 1 + np.exp((-V_ext - 20)/2))
+#      tau = 10
+#      dS = fv - sdict['S']/tau
+#      g = 2.52916*1e-9
+#      sdict['S'] += dS*dt
+#      syn_act = -g*sdict['weight']*sdict['S']*(V_ext - VCa)
+#      syn_act_2 = g*sdict['weight']*sdict['S']
+#      return syn_act, sdict, syn_act_2
+
+def I_gaba(sdict, V_ext, dt):
+    tau1 = 1
+    tau2 = 4
+    Vnmda = -82
+    #  g = -8e-7
+    #  g = -3.5e-8
+    #  g = -.7e-7
+    g = .5e-7 #friday
+    #  g = 7e-6*1.2/4
+
+    dA = -sdict['A']/tau1
+    dB = -sdict['B']/tau2
+    sdict['A'] += dA*dt
+    sdict['B'] += dB*dt
+
+    syn_act = sdict['weight']*g*(sdict['B'] - sdict['A'])*(V_ext - Vnmda)
+    return syn_act, sdict, -syn_act
+
+
 #  def tuning_vm(arr, s = .3, shift = 0):
 #      shift = np.radians(shift)*2 #von mises is for the full circle we only look at the half
 #      disp = 1/np.power(np.deg2rad(s)*2, 2)
@@ -76,22 +106,29 @@ def create_ampa(delay, w):
     stim = {"kind":0 ,"s1":.01, "delay":delay, 'A':2.6, 'B':2.6, 'weight':w}
     return stim
 
-def create_stim_dict(delay, weight, N_burst = 1):
+def create_gaba(delay,w):
+    #  stim = {"kind":2, "delay":delay, "S":0.1, "weight":w}
+    stim = {"kind":2 ,"s1":.01, "delay":delay, 'A':2.6, 'B':2.6, 'weight':w}
+    return stim
+
+
+def create_stim_dict(delay, weight, weight2, N_burst = 1):
     ''' Each stimuli is first activated at a delay time, here we spawn stimuli from their earlier create functions'''
     all_stim = []
     for k in range(N_burst):
         for i in range(len(delay)):
             #  ran = np.random.randint(-5,5,1)[0]
-            ran = 0
+            ran = 10
             all_stim.append(create_nmda(delay[i] + ran + 500*k, weight[i]))
             all_stim.append(create_ampa(delay[i] + ran + 500*k, weight[i]))
+            all_stim.append(create_gaba(0 + np.random.randint(0,500,1)[0] + 500*k, weight2[i]))
     return all_stim
 
 def Isyn(stims, time, dt, V):
     ''' Function that monitors whitch synapses that are active at a given time, and add all active synapses contribution'''
     I_return = 0
-    I_comp = np.zeros(2)
-    I_cc = np.zeros(2)
+    I_comp = np.zeros(3)
+    I_cc = np.zeros(3)
     for stim in stims:
         delay = stim["delay"]
         if time > delay and time < delay + 200:
@@ -99,10 +136,16 @@ def Isyn(stims, time, dt, V):
                 syn_act, stim, syn_act_2 = I_nmda(stim, dt, V)
                 I_comp[0] += syn_act
                 I_cc[0] += syn_act_2
-            else:
+            elif stim["kind"] == 0:
                 syn_act, stim = I_ampa(stim, dt, V)
                 I_comp[1] += syn_act
                 I_cc[1] += syn_act/V
+            elif stim["kind"] == 2:
+                syn_act, stim, syn_act_2 = I_gaba(stim, dt, V)
+                syn_act *= -1
+                I_comp[2] += syn_act
+                I_cc[2] += syn_act_2
+                
             I_return += syn_act
     return I_return, I_comp, I_cc
 
@@ -133,13 +176,13 @@ def simulation(param, E, delays, plot = True, change = False):
     C = 2
     RT = []
 
-    stims = create_stim_dict(delays, param['weights'], 3)
+    stims = create_stim_dict(delays, param['weights'], param['weights2'], 3)
     N = 150000
     I_chan = np.zeros((11,N))
     I_g = np.zeros((11,N))
-    I_syn_comp = np.zeros((2,N))
-    I_syn_cc = np.zeros((2,N))
-    I_exp = np.zeros((2,N))
+    I_syn_comp = np.zeros((3,N))
+    I_syn_cc = np.zeros((3,N))
+    I_exp = np.zeros((3,N))
     E_arr = np.zeros(N)
     labs = []
     dE = 0
@@ -259,17 +302,24 @@ def create_weight_and_delay(regime, stim_alpha):
     N_syn  = np.array([7,8,9,10,11,12,13])
     N = int(np.random.choice(N_syn, 1))
     weights = np.zeros(N)
+    weights2 = np.zeros(N)
     delays = np.random.poisson(30, N) + 200
     for i in range(N):
         if regime == 'clustered':
-            disp = 1/np.power(np.radians(11*2), 2)
+            disp = 1/np.power(np.deg2rad(15)*2, 2)
+            #  disp = 1/np.power(np.deg2rad(11)*2, 2)
             rvs = stats.vonmises.rvs(kappa = disp, loc = 0, size = 1)[0]
             weights[i] = tuning_vm(np.deg2rad(rvs), 11, stim_alpha)
         else:
-            #  rvs = np.random.uniform(-np.pi,np.pi)
+            rvs = np.random.uniform(-np.pi,np.pi)
             rvs = np.random.uniform(-90,90)
             weights[i] = tuning_vm(rvs, 11, stim_alpha)
-    return delays, weights, N
+        rvs = np.random.uniform(-90,90)
+        #      rvs = np.random.uniform(-180,180)
+        #      weights[i] = tuning_vm(rvs, 11, stim_alpha)
+        #  rvs = np.random.uniform(-180,180)
+        weights2[i] = tuning_vm(rvs, 11, stim_alpha)
+    return delays, weights, N, weights2
 
 
 

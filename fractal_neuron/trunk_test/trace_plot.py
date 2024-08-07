@@ -61,12 +61,12 @@ def func(path):
                 #      #  ax.set_xticks([])
                 #      #  ax.set_yticks([])
                 #      #  plt.savefig('AOC_plot', dpi = 200)
-                plt.savefig('FIG_4E_CB.svg', dpi = 400)
-                plt.savefig('FIG_4E_CB.pdf', dpi = 400)
-                plt.show()
+                #  plt.savefig('FIG_4E_CB.svg', dpi = 400)
+                #  plt.savefig('FIG_4E_CB.pdf', dpi = 400)
+                #  plt.show()
 
 
-                exit()
+                #  exit()
 
     #      data[:,:,l] = np.array(bin_).reshape(8,3).T
     #

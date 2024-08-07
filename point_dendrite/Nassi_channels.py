@@ -586,8 +586,8 @@ def IV_plot(Vrs, Ek):
             Sav[i, idx:] = value
             idx += 1
             #  print(key, idx)
-            if i == 1:
-                print(key)
+            #  if i == 1:
+                #  print(key)
         #  print(i)
     Sav[:, 0] = Vrs
 

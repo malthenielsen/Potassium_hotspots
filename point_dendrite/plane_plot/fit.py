@@ -1,6 +1,6 @@
 import numpy as np
 from matplotlib import pyplot as plt
-plt.style.use('science')
+#  plt.style.use('science')
 import glob
 
 
@@ -9,6 +9,13 @@ def load(w,N):
         ret = np.load(f'./plane_plot_2/res_{w}_{N}_301.npy')
     except:
         ret = np.load(f'./plane_plot_2/res_{np.round(w,2)}_{N}_301.npy')
+    return ret 
+
+def load(w,N):
+    try:
+        ret = np.load(f'./res/res_{w}_{N}_301.npy')
+    except:
+        ret = np.load(f'./res/res_{np.round(w,2)}_{N}_301.npy')
     return ret 
 
 def do_something(N):
@@ -41,21 +48,26 @@ def do_something(N):
     return W, np.array(EK_jump)
 
 NV = np.array([7,8,9,10,11,12,13])
-fig, ax = plt.subplots(figsize = (7,7))
+fig, ax = plt.subplots(figsize = (7,6))
 A = []
 B = []
 for N in NV:
     W, EK = do_something(N)
     ax.scatter(W, EK)
+    #  ax.plot(W, fit[2] + fit[1]*W)
     for i in range(len(W)):
         if not np.isnan(EK[i]):
             A.append([W[i], N, 1])
             B.append(EK[i])
+ax.set(ylabel = '$\Delta E_K (mV)$', xlabel = 'Mean synaptic activity, w (a.u.)')
+ax.legend(NV, title = 'Number of Synapses')
+fig.savefig('Planar plot from the side')
 
 A = np.matrix(A)
 B = np.matrix(B).T
 
 fit = (A.T * A).I * A.T * B
+
 
 plt.figure(figsize = (8,8))
 ax = plt.subplot(111, projection='3d')
