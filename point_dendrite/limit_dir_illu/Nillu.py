@@ -50,14 +50,15 @@ for i in range(13):
     tp.append(dek[idx])
 
 fig, ax = plt.subplots(1,1, figsize = (10,8))
-im = ax.imshow(np.flipud(img), cmap = 'plasma_r', extent = [2,14, 0, 1], aspect = 'auto')
+im = ax.imshow(np.flipud(img), cmap = 'plasma_r', extent = [2,14, 0, 1], aspect = 'auto', vmin = -40, vmax = -10)
 for i in range(13):
     #  print(tp)
     ax.vlines(tp[i], i/13, (i+1)/13, color = 'floralwhite', lw = 2, ls = '--')
 
-ax.set(xlabel = 'N synapses', ylabel = 'Mean Synapse Activity')
+ax.set(xlabel = 'N synapses', ylabel = 'Mean synaptic activity (a.u.)')
 ax.set_xticks([2,4,6,8,10,12,14], [2,4,6,8,10,12,14])
 plt.colorbar(im, ax = ax, label = 'Peak voltage [mV]')
+ax.set_ylim(.384, .84)
 fig.savefig('S2_N_mean')
 plt.show()
 exit()

@@ -150,11 +150,12 @@ ax40.set(ylim =(-70,0), xlabel = 'Time [ms]', ylabel = 'Vm [mV]')
 ax20.legend(loc = 6)
 
 fig.suptitle('Clustered type point dendrite Vm traces \n at different stimulation angle relative to soma prefered')
+fig.suptitle('Point dendrite Vm traces at different stimulation orientations relative to target orientation')
 plt.show()
 #  fig.savefig('Traces?plot', dpi = 200)
 #  fig.savefig('FIG_2B.svg', dpi = 400)
 #  fig.savefig('FIG_S2B_GABA_random.png', dpi = 200)
-fig.savefig('FIG_S2B_GABA_random.png', dpi = 200)
+fig.savefig('FIG_S2B_random_GABA.png', dpi = 200)
 
 exit()
 
