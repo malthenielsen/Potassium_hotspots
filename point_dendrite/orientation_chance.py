@@ -11,8 +11,9 @@ def rm(x, N = 10):
     return np.convolve(x, np.ones(N)/N, mode='valid')
 
 data = np.load('Spike_curves.npy')
-data[:, -6:] = 0
+#  data[:, -6:] = 0
 angles = np.linspace(0,90,200)
+np.save('Spike_angles.npy', angles)
 fig, ax = plt.subplots(1,2, figsize = (12,6))
 #  dek = [0,4, 5, 6, 7, 8, 9, 10]
 dek = [0, 6, 8, 10, 12, 14, 16, 18]
@@ -23,13 +24,20 @@ ax[0].set_xlabel('Angle from soma prefered')
 max_height = []
 half_width = []
 
-fig2, AX = plt.subplots(1,1, figsize = (4,5))
+fig2, AX = plt.subplots(1,1, figsize = (3.5,5))
 
 def OSI(arr, ori):
+    arr2 = arr[::-1]
+    arr = np.append(arr2, arr[1:])
+    ori2 = ori[::-1]*-1
+    ori = np.append(ori2, ori[1:])
+    #  plt.plot(ori, arr)
+    #  plt.show()
     ori = np.deg2rad(ori)
     top = np.sum(arr * np.exp(2*1j*ori))
-    F = top/np.sum(arr)
-    return 1 - np.arctan2(np.imag(F), np.real(F))
+    F = np.abs(top)/np.sum(arr)
+    #  return 1 - np.arctan2(np.imag(F), np.real(F))
+    return F
 
 for i in range(len(dek)):
     max_height.append(np.nanmax(data[i,:]))
@@ -76,21 +84,23 @@ AX2.errorbar(dek, half_width, label = 'FWHM', color = 'grey',marker = 'o', ls = 
 ax[1].set_xlabel(r'$\Delta$$E_K$')
 ax[1].set_ylabel('Probability at soma prefered', color = 'red')
 AX.set_xlabel(r'$\Delta$$E_K$')
-AX.set_ylabel('Probability at soma prefered', color = 'red')
-ax2.set_ylabel('OSI', color = 'blue')
+AX.set_ylabel('Peak spike probability', color = 'black')
+
+ax2.set_ylabel('Orientation selectivity index', color = 'grey')
 ax2.set_ylim(0, 1)
 ax2.set_title('Probability distribution \n characteristics')
-AX2.set_ylabel('OSI', color = 'blue')
+AX2.set_ylabel('Orientation selectivity index', color = 'grey')
 AX2.set_ylim(0, 1)
 AX2.set_title('Probability distribution \n characteristics')
 #  fig2.savefig('p_dist_char')
 ax[0].text(-0.1, 1.05, 'G', fontweight = 'bold', transform = ax[0].transAxes, fontsize = 20)
 ax[1].text(-0.1, 1.05, 'H', fontweight = 'bold', transform = ax[1].transAxes, fontsize = 20)
+AX.set_xticks([0, 6, 12, 18], [0, 6, 12, 18])
 fig.savefig('Probability_4_spike', dpi = 200)
 fig.savefig('FIG_2GH.svg', dpi = 400)
 fig.savefig('FIG_2GH.pdf', dpi = 400)
 plt.tight_layout()
-fig2.savefig('FIG_2H.pdf', dpi = 50)
+fig2.savefig('FIG_2H.pdf', dpi = 200)
 plt.show()
 exit()
 

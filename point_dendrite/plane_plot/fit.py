@@ -59,7 +59,7 @@ for N in NV:
         if not np.isnan(EK[i]):
             A.append([W[i], N, 1])
             B.append(EK[i])
-ax.set(ylabel = '$\Delta E_K (mV)$', xlabel = 'Mean synaptic activity, w (a.u.)')
+ax.set(ylabel = '$\Delta E_K (mV)$', xlabel = 'Mean synaptic activity (a.u.)')
 ax.legend(NV, title = 'Number of Synapses')
 fig.savefig('Planar plot from the side')
 

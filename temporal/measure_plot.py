@@ -103,11 +103,13 @@ for idx, data in enumerate(data_arr):
     for i in range(6):
         ax[idx].plot(time,DKE[i,:] + 95, color = plt.cm.copper_r(abs(i-5)/5) )
         #  ax[idx].plot(time,DKE[i,:] + 95, color = plt.cm.copper(abs(i)/10) )
-    ax[idx].set_title('Firing interval = '+ str(pmat[idx]) + '  $[ms]$') 
+    ax[idx].set_title('Stimulus interval = '+ str(pmat[idx]) + '  $[ms]$') 
 
-    ax[idx].set_ylabel('$\Delta E_{K^+} [mV]$', rotation = 45)
+    ax[idx].set_ylabel('$\Delta E_{K^+} [mV]$', rotation = 90)
+    ax[idx].grid('x')
 
 ax[0].set_xlim(0,1000)
+ax[2].set_xlabel('Time [ms]')
 
 sm = plt.cm.ScalarMappable(cmap='copper_r', norm=plt.Normalize(vmin=0, vmax=50))
 sm.set_array([])  # Set an empty array
@@ -117,13 +119,14 @@ sm.set_array([])  # Set an empty array
 cbar = fig.colorbar(sm, ax=ax, orientation='vertical', fraction=0.02, pad=0.04)
 cbar.set_label('Distance from cluster segment $[\mu m]$')
 
-fig.suptitle('$\Delta E_K$ shift at different firing intervals')
+#  fig.suptitle('$\Delta E_K$ shift at different interstimulus intervals')
 fig.savefig('Temporal_FR_test_29.png', dpi = 200)
 plt.show()
 
 data1 = np.load('measure_NAK_new_29_300_0.npy')
 data2 = np.load('measure_NAK_new_29_300_22.npy')
 data3 = np.load('measure_NAK_new_29_300_45.npy')
+data_off = np.load('measure_NAK_new_29_300_none.npy')
 data_arr = [data1, data2, data3]
 fig, ax = plt.subplots(3, 1, figsize = (15,7), sharex =  True, sharey = True)
 pmat = [0, 22.5, 45]
@@ -145,11 +148,23 @@ for idx, data in enumerate(data_arr):
     for i in range(6):
         ax[idx].plot(time,DKE[i,:] + 95, color = plt.cm.copper_r(abs(i-5)/5) )
         #  ax[idx].plot(time,DKE[i,:] + 95, color = plt.cm.copper(abs(i)/10) )
-    ax[idx].set_title('Stimulation orientation = '+ str(pmat[idx]) + '  $\circ deg$') 
+    ax[idx].set_title('Stimulation orientation = '+ str(pmat[idx]) + '$^\circ$')
 
-    ax[idx].set_ylabel('$\Delta E_{K^+} [mV]$', rotation = 45)
+    ax[idx].set_ylabel('$\Delta E_{K^+} [mV]$', rotation = 90)
+    ax[idx].grid('x')
 
 ax[0].set_xlim(0,1000)
+
+data_off = data_off.reshape(10,4,-1)
+data_off_std = np.std(data_off, axis = 1)
+data_off = np.mean(data_off, axis = 1)
+time = np.arange(0,data_off.shape[1],1)*0.2
+DKE = data_off#/5
+DKE = -26.7*np.log(140/(4 + 1*DKE))
+ax[0].plot(time, DKE[0,:] + 95, color = 'green', ls = '--', label = 'Reference $\Delta E_K$')
+ax[1].plot(time, DKE[0,:] + 95, color = 'green', ls = '--', label = 'Reference $\Delta E_K$')
+ax[2].plot(time, DKE[0,:] + 95, color = 'green', ls = '--', label = 'Reference $\Delta E_K$')
+ax[2].set_xlabel('Time [ms]')
 
 sm = plt.cm.ScalarMappable(cmap='copper_r', norm=plt.Normalize(vmin=0, vmax=50))
 sm.set_array([])  # Set an empty array
@@ -159,6 +174,6 @@ sm.set_array([])  # Set an empty array
 cbar = fig.colorbar(sm, ax=ax, orientation='vertical', fraction=0.02, pad=0.04)
 cbar.set_label('Distance from cluster segment $[\mu m]$')
 
-fig.suptitle('$\Delta E_K$ shift at different stimulus orientation')
+#  fig.suptitle('$\Delta E_K$ shift at different stimulus orientation')
 fig.savefig('Temporal_SO_test_29.png', dpi = 200)
 plt.show()

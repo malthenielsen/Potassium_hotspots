@@ -49,12 +49,12 @@ for idx, data in enumerate(data_arr):
     time = np.arange(0,data.shape[1],1)*0.2
 
     DKE = data#/5
-    DKE = -26.7*np.log((140 - data_in)/(4 + 1*DKE))
+    DKE = -26.7*np.log((140)/(4 + 1*DKE))
     for i in range(6):
         ax[idx].plot(time,DKE[i,:] + 95, color = plt.cm.copper_r(abs(i-5)/5) )
         #  ax[idx].plot(time,DKE[i,:] + 95, color = plt.cm.copper(abs(i)/10) )
     ax[idx].set_title('$K_{dec} = $'+ str(pmat[idx]) + ' E-8 $m/s$') 
-    ax[idx].set_ylabel('$\Delta E_{K^+} [mV]$', rotation = 45)
+    ax[idx].set_ylabel('$\Delta E_{K^+} [mV]$', rotation = 90)
 
 
 for idx, data in enumerate(data_null_arr):
@@ -68,7 +68,7 @@ for idx, data in enumerate(data_null_arr):
     DKE = data#/5
     #  DKE = -26.7*np.log(140/(4 + 1*DKE))
     DKE = -26.7*np.log((140)/(4 + 1*DKE))
-    ax[idx].plot(time, DKE[0,:] + 95, color = 'green', ls = '--', label = 'Lower reference $\Delta E_K$')
+    #  ax[idx].plot(time, DKE[0,:] + 95, color = 'green', ls = '--', label = 'Lower reference $\Delta E_K$')
     ax[idx].grid('x')
 
 
@@ -86,10 +86,11 @@ cbar = fig.colorbar(sm, ax=ax, orientation='vertical', fraction=0.02, pad=0.04)
 cbar.set_label('Distance from cluster segment $[\mu m]$')
 
 
-fig.suptitle('$\Delta E_{K^+}$ changes along the dendrite \n at different $K^+$ pump strengths')
+#  fig.suptitle('$\Delta E_{K^+}$ changes along the dendrite \n at different $K^+$ pump strengths')
 fig.savefig('Temporal_plot_KPUMP', dpi = 400)
 
-fig, ax = plt.subplots(2, 1, figsize = (15,5), sharex =  True, sharey = True)
+#  fig, ax = plt.subplots(2, 1, figsize = (15,5), sharex =  True, sharey = True)
+fig, ax = plt.subplots(1, 1, figsize = (15,3), sharex =  True, sharey = True)
 for idx, data in enumerate(data_arr[1:2]):
     data = data.reshape(10,4,-1)
     data_in = data_arr_in[idx]
@@ -104,48 +105,51 @@ for idx, data in enumerate(data_arr[1:2]):
     DKE = -26.7*np.log((140 - data_in)/(4 + 1*DKE))
     for i in range(6):
         if i == 5:
-            ax[0].plot(time,DKE[i,:] + 95, color = plt.cm.copper_r(abs(i-5)/5), label = 'Intra- and extra-cellular' )
-            ax[0].plot(time,DKE_only[i,:] + 95, color = plt.cm.copper_r(abs(i-5)/5), ls = '--' ,label = 'Extracellular only')
+            ax.plot(time,DKE[i,:] + 95, color = plt.cm.copper_r(abs(i-5)/5), label = 'Intra- and extra-cellular' )
+            ax.plot(time,DKE_only[i,:] + 95, color = plt.cm.copper_r(abs(i-5)/5), ls = '--' ,label = 'Extracellular only')
         else:
-            ax[0].plot(time,DKE[i,:] + 95, color = plt.cm.copper_r(abs(i-5)/5) )
-            ax[0].plot(time,DKE_only[i,:] + 95, color = plt.cm.copper_r(abs(i-5)/5), ls = '--' )
+            ax.plot(time,DKE[i,:] + 95, color = plt.cm.copper_r(abs(i-5)/5) )
+            ax.plot(time,DKE_only[i,:] + 95, color = plt.cm.copper_r(abs(i-5)/5), ls = '--' )
 
-        ax[1].plot(time,DKE_only[i,:] + 95, color = plt.cm.copper_r(abs(i-5)/5) )
+        #  ax[1].plot(time,DKE_only[i,:] + 95, color = plt.cm.copper_r(abs(i-5)/5) )
         #  ax[idx].plot(time,DKE[i,:] + 95, color = plt.cm.copper(abs(i)/10) )
     #  ax.set_title('$K_{dec} = $'+ str(pmat[1]) + ' E-8 $m/s$')
-    ax[0].legend()
-    ax[0].set_ylabel('$\Delta E_{K^+} [mV]$', rotation = 45)
+    ax.legend()
+    ax.set_ylabel('$\Delta E_{K^+} [mV]$', rotation = 90)
+    ax.grid('x')
+    ax.set_xlabel('Time [ms]')
+plt.tight_layout()
 
-for idx, data in enumerate(data_all_arr[1:2]):
-    data = data.reshape(10,4,-1)
-    data_std = np.std(data, axis = 1) 
-    data = np.mean(data, axis = 1)
-    data_in = data_all_arr_in[idx]
-    data_in = data_in.reshape(10,4,-1)
-    data_in = np.mean(data_in, axis = 1)
-    time = np.arange(0,data.shape[1],1)*0.2
-    DKE = data#/5
-    #  DKE = -26.7*np.log(140/(4 + 1*DKE))
-    DKE = -26.7*np.log((140)/(4 + 1*DKE))
-    ax[1].plot(time, DKE[3,:] + 95, color = 'red', ls = '--', label = 'Upper reference $\Delta E_K$')
-    ax[1].grid('x')
+#  for idx, data in enumerate(data_all_arr[1:2]):
+#      data = data.reshape(10,4,-1)
+#      data_std = np.std(data, axis = 1)
+#      data = np.mean(data, axis = 1)
+#      data_in = data_all_arr_in[idx]
+#      data_in = data_in.reshape(10,4,-1)
+#      data_in = np.mean(data_in, axis = 1)
+#      time = np.arange(0,data.shape[1],1)*0.2
+#      DKE = data#/5
+#      #  DKE = -26.7*np.log(140/(4 + 1*DKE))
+#      DKE = -26.7*np.log((140)/(4 + 1*DKE))
+#      ax.plot(time, DKE[3,:] + 95, color = 'red', ls = '--', label = 'Upper reference $\Delta E_K$')
+#      ax.grid('x')
+#
+#  for idx, data in enumerate(data_null_arr[1:2]):
+#      data = data.reshape(10,4,-1)
+#      data_std = np.std(data, axis = 1)
+#      data = np.mean(data, axis = 1)
+#      data_in = data_null_arr_in[idx]
+#      data_in = data_in.reshape(10,4,-1)
+#      data_in = np.mean(data_in, axis = 1)
+#      time = np.arange(0,data.shape[1],1)*0.2
+#      DKE = data#/5
+#      #  DKE = -26.7*np.log(140/(4 + 1*DKE))
+#      DKE = -26.7*np.log((140)/(4 + 1*DKE))
+#      ax.plot(time, DKE[0,:] + 95, color = 'green', ls = '--', label = 'Lower reference $\Delta E_K$')
+#      ax.set_ylabel('$\Delta E_{K^+} [mV]$', rotation = 45)
+#      ax.legend()
 
-for idx, data in enumerate(data_null_arr[1:2]):
-    data = data.reshape(10,4,-1)
-    data_std = np.std(data, axis = 1) 
-    data = np.mean(data, axis = 1)
-    data_in = data_null_arr_in[idx]
-    data_in = data_in.reshape(10,4,-1)
-    data_in = np.mean(data_in, axis = 1)
-    time = np.arange(0,data.shape[1],1)*0.2
-    DKE = data#/5
-    #  DKE = -26.7*np.log(140/(4 + 1*DKE))
-    DKE = -26.7*np.log((140)/(4 + 1*DKE))
-    ax[1].plot(time, DKE[0,:] + 95, color = 'green', ls = '--', label = 'Lower reference $\Delta E_K$')
-    ax[1].set_ylabel('$\Delta E_{K^+} [mV]$', rotation = 45)
-    ax[1].legend()
-
-fig.suptitle('$\Delta E_{K^+}$ changes along the dendrite \n with different simulation regimes')
+#  fig.suptitle('$\Delta E_{K^+}$ changes along the dendrite \n with different simulation regimes')
 fig.savefig('Temporal_plot_regime', dpi = 400)
 
 plt.show()
