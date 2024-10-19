@@ -8,9 +8,10 @@ def load_data(kind, angle, k_max):
     del_arr = []
     w_arr = []
     for i in range(10):
-        #  data = np.load(f'../EK_effect/long_clamp_data_{i}_{kind}_{angle}_{k_max}.npy', allow_pickle = True)
+        data = np.load(f'../EK_effect/long_clamp_data_{i}_{kind}_{angle}_{k_max}.npy', allow_pickle = True)
         #  data = np.load(f'./EK_effect/EK_effect/no_noise_clamp_data_{i}_{kind}_{angle}_{k_max}.npy', allow_pickle = True)
-        data = np.load(f'./EK_short/no_noise_clamp_data_{i}_{kind}_{angle}_{k_max}.npy', allow_pickle = True)
+        #  data = np.load(f'./EK_short/no_noise_clamp_data_{i}_{kind}_{angle}_{k_max}.npy', allow_pickle = True)
+        data = np.load(f'./single_traces/data_{i}_{kind}_{angle}_{k_max}.npy')
         V = data.item().get('V')
         RT = data.item().get('RT')
         V_arr.append(V)

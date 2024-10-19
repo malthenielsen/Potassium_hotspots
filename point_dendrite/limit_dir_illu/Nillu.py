@@ -30,7 +30,7 @@ print(dek)
 #  data_75 = np.load('./res_2024/res_0.75_8_2024.npy')
 #  data_80 = np.load('./res/res_0.8_8_301.npy')
 #  data_85 = np.load('./res/res_0.85_8_301.npy')
-fnames = glob.glob('Nres/*')
+fnames = glob.glob('Nresnew/*')
 img = []
 val = []
 for fname in fnames:
@@ -50,14 +50,14 @@ for i in range(13):
     tp.append(dek[idx])
 
 fig, ax = plt.subplots(1,1, figsize = (10,8))
-im = ax.imshow(np.flipud(img), cmap = 'plasma_r', extent = [2,14, 0, 1], aspect = 'auto', vmin = -40, vmax = -10)
+im = ax.imshow(np.flipud(img), cmap = 'plasma_r', extent = [2,14, 0, 1], aspect = 'auto')
 for i in range(13):
     #  print(tp)
     ax.vlines(tp[i], i/13, (i+1)/13, color = 'floralwhite', lw = 2, ls = '--')
 
-ax.set(xlabel = 'N synapses', ylabel = 'Mean synaptic activity (a.u.)')
+ax.set(xlabel = 'N synapses', ylabel = 'Mean synaptic activity')
 ax.set_xticks([2,4,6,8,10,12,14], [2,4,6,8,10,12,14])
-plt.colorbar(im, ax = ax, label = 'Peak voltage [mV]')
+plt.colorbar(im, ax = ax, label = 'Peak voltage (mV)')
 ax.set_ylim(.384, .84)
 fig.savefig('S2_N_mean')
 plt.show()
@@ -75,8 +75,8 @@ im = ax2.imshow(img[1:,6*(100//18):], aspect = 'auto', extent = [6,18, 0, 1], cm
 
 ax1.set_yticks(np.arange(0.05,1,.2), np.round(np.arange(.4, .9, .1)[::-1], 2))
 ax2.set_yticks([])
-ax2.set_xlabel('$\Delta E_K$ [mV]')
-ax1.set_ylabel('Mean Spine input [AU]')
+ax2.set_xlabel('$\Delta E_K$ (mV)')
+ax1.set_ylabel('Mean Spine input')
 #  ax2.text(-0.1, 1.05, 'F', fontweight = 'bold', transform = ax.transAxes, fontsize = 20)
 for i in range(2,3):
     ax1.vlines(tp[-(i +1)], i/10,(i+1)/10, color = 'floralwhite', lw = 2, ls = '--')
@@ -86,7 +86,7 @@ for i in range(4,10):
     else:
         ax2.vlines(tp[-(i +1)], i/10,(i+1)/10, color = 'white', lw = 2, ls = '--')
 ax2.legend(['Transition point'], loc = 1)
-plt.colorbar(im, ax = ax2, label = 'Peak voltage [mV]')
+plt.colorbar(im, ax = ax2, label = 'Peak voltage (mV)')
 plt.savefig('Transition_heat', dpi = 200)
 plt.savefig('FIG_2E.svg', dpi = 400)
 plt.savefig('FIG_2E.pdf', dpi = 400)

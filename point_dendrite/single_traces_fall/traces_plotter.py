@@ -5,34 +5,27 @@ import matplotlib.gridspec as gridspec
 from mpl_toolkits.axes_grid1.inset_locator import zoomed_inset_axes
 from mpl_toolkits.axes_grid1.inset_locator import mark_inset
 
-def load_data(kind, angle):
+def load_data(kind, angle, sur):
     V_arr = []
     del_arr = []
     w_arr = []
     for i in range(10):
-        #  data = np.load(f'single_traces/data_{i}_{kind}_{angle}.npy', allow_pickle = True)
-        #  data = np.load(f'single_traces_2024/data_{i}_{kind}_{angle}_10_none.npy', allow_pickle = True)
-        #  data = np.load(f'single_traces_2024/data_{i}_{kind}_{angle}_10_NR_NONE_NONE.npy', allow_pickle = True)
-        data = np.load(f'single_traces_2024/data_{i}_{kind}_{angle}_SPIKE.npy', allow_pickle = True)
-        V = data.item().get('V')[::100]
-        RT = data.item().get('RT')[::100]
-        V_arr.append(V)
-        del_arr.append(data.item().get('delays'))
-        w_arr.append(data.item().get('weights'))
+        V_arr.append(np.load(f'data_{i}_{kind}_{angle}_{sur}.npy'))
+
+
     V_arr = np.vstack(V_arr)
-    return V_arr,del_arr,w_arr, RT,
+    RT = np.arange(len(V_arr[0]))
 
-#  C_00, DC_00, wDC_00,  RT = load_data('clu', 0)
-#  C_22, DC_22, wDC_22,  RT = load_data('clu',22)
-#  C_45, DC_45, wDC_45,  RT = load_data('clu',45)
-#  C_67, DC_67, wDC_67,  RT = load_data('clu',67)
-#  C_90, DC_90, wDC_90,  RT = load_data('clu',90)
+    return V_arr, RT
 
-C_00, DC_00, wDC_00,  RT = load_data('clu', 0)
-C_22, DC_22, wDC_22,  RT = load_data('clu',5)
-C_45, DC_45, wDC_45,  RT = load_data('clu',10)
-C_67, DC_67, wDC_67,  RT = load_data('clu',15)
-C_90, DC_90, wDC_90,  RT = load_data('clu',20)
+
+C_ba, RT = load_data('clu',0, 'GABA_FALSE')
+C_hw, RT = load_data('clu',5, 'GABA_FALSE')
+C_df, RT = load_data('clu',10, 'GABA_FALSE')
+C_wf, RT = load_data('clu',15, 'GABA_FALSE')
+C_twf, RT = load_data('clu',20, 'GABA_FALSE')
+#  C_twf, RT = load_data('clu',25, 'GABA_FALSE')
+#  C_twf, RT = load_data('clu',10, 'quad_weight')
              
 
 fig = plt.figure(figsize = (8, 10), layout = 'tight')
@@ -107,11 +100,11 @@ ax30.text(50,-15, '$15^\circ$', size = 15)
 ax40.text(50,-15, '$20^\circ$', size = 15)
 
 for i in range(10):
-    ax00.plot(RT[:], C_00[i,:], color = 'grey', alpha = .3, linewidth = .5)
-    ax10.plot(RT[:], C_22[i,:], color = 'grey', alpha = .3, linewidth = .5)
-    ax20.plot(RT[:], C_45[i,:], color = 'grey', alpha = .3, linewidth = .5)
-    ax30.plot(RT[:], C_67[i,:], color = 'grey', alpha = .3, linewidth = .5)
-    ax40.plot(RT[:], C_90[i,:], color = 'grey', alpha = .3, linewidth = .5)
+    ax00.plot(RT[:], C_ba[i,:], color = 'grey', alpha = .3, linewidth = .5)
+    ax10.plot(RT[:], C_hw[i,:], color = 'grey', alpha = .3, linewidth = .5)
+    ax20.plot(RT[:], C_df[i,:], color = 'grey', alpha = .3, linewidth = .5)
+    ax30.plot(RT[:], C_wf[i,:], color = 'grey', alpha = .3, linewidth = .5)
+    ax40.plot(RT[:], C_twf[i,:], color = 'grey', alpha = .3, linewidth = .5)
 
 
     #  ax01.plot(RT[1200:1400], C_00[i,1200:1400], color = 'grey', alpha = .3, linewidth = .5)
@@ -120,23 +113,29 @@ for i in range(10):
     #  ax31.plot(RT[1200:1400], C_67[i,1200:1400], color = 'grey', alpha = .3, linewidth = .5)
     #  ax41.plot(RT[1200:1400], C_90[i,1200:1400], color = 'grey', alpha = .3, linewidth = .5)
 
-ax00.plot(RT[:], np.mean(C_00, axis = 0), color = 'teal', alpha = 1, linewidth = 1)
-ax10.plot(RT[:], np.mean(C_22, axis = 0), color = 'teal', alpha = 1, linewidth = 1)
-ax20.plot(RT[:], np.mean(C_45, axis = 0), color = 'teal', alpha = 1, linewidth = 1, label = 'Mean trace \n N = 10')
-ax30.plot(RT[:], np.mean(C_67, axis = 0), color = 'teal', alpha = 1, linewidth = 1)
-ax40.plot(RT[:], np.mean(C_90, axis = 0), color = 'teal', alpha = 1, linewidth = 1)
+ax00.plot(RT[:], np.mean(C_ba, axis = 0), color = 'teal', alpha = 1, linewidth = 1)
+ax10.plot(RT[:], np.mean(C_hw, axis = 0), color = 'teal', alpha = 1, linewidth = 1)
+ax20.plot(RT[:], np.mean(C_df, axis = 0), color = 'teal', alpha = 1, linewidth = 1, label = 'Mean trace \n N = 10')
+ax30.plot(RT[:], np.mean(C_wf, axis = 0), color = 'teal', alpha = 1, linewidth = 1)
+ax40.plot(RT[:], np.mean(C_twf, axis = 0), color = 'teal', alpha = 1, linewidth = 1)
 
-ax01.plot(RT[1200:1400], np.mean(C_00[:,1200:1400], axis = 0), color = 'tab:red', alpha = 1, linewidth = 1)
-ax11.plot(RT[1200:1400], np.mean(C_22[:,1200:1400], axis = 0), color = 'tab:red', alpha = 1, linewidth = 1)
-ax21.plot(RT[1200:1400], np.mean(C_45[:,1200:1400], axis = 0), color = 'tab:red', alpha = 1, linewidth = 1)
-ax31.plot(RT[1200:1400], np.mean(C_67[:,1200:1400], axis = 0), color = 'tab:red', alpha = 1, linewidth = 1)
-ax41.plot(RT[1200:1400], np.mean(C_90[:,1200:1400], axis = 0), color = 'tab:red', alpha = 1, linewidth = 1)
+ax01.plot(RT[1200:1400], np.mean(C_ba[:,1200:1400], axis = 0), color = 'tab:red', alpha = 1, linewidth = 1)
+ax11.plot(RT[1200:1400], np.mean(C_hw[:,1200:1400], axis = 0), color = 'tab:red', alpha = 1, linewidth = 1)
+ax21.plot(RT[1200:1400], np.mean(C_df[:,1200:1400], axis = 0), color = 'tab:red', alpha = 1, linewidth = 1)
+ax31.plot(RT[1200:1400], np.mean(C_wf[:,1200:1400], axis = 0), color = 'tab:red', alpha = 1, linewidth = 1)
+ax41.plot(RT[1200:1400], np.mean(C_twf[:,1200:1400], axis = 0), color = 'tab:red', alpha = 1, linewidth = 1)
 
-ax01.plot(RT[1200:1400], np.mean(C_00[:,200:400], axis = 0), color = 'tab:blue', alpha = 1, linewidth = 1)
-ax11.plot(RT[1200:1400], np.mean(C_22[:,200:400], axis = 0), color = 'tab:blue', alpha = 1, linewidth = 1)
-ax21.plot(RT[1200:1400], np.mean(C_45[:,200:400], axis = 0), color = 'tab:blue', alpha = 1, linewidth = 1)
-ax31.plot(RT[1200:1400], np.mean(C_67[:,200:400], axis = 0), color = 'tab:blue', alpha = 1, linewidth = 1)
-ax41.plot(RT[1200:1400], np.mean(C_90[:,200:400], axis = 0), color = 'tab:blue', alpha = 1, linewidth = 1)
+ax01.plot(RT[1200:1400], np.mean(C_ba[:,200:400], axis = 0), color = 'tab:blue', alpha = 1, linewidth = 1)
+ax11.plot(RT[1200:1400], np.mean(C_hw[:,200:400], axis = 0), color = 'tab:blue', alpha = 1, linewidth = 1)
+ax21.plot(RT[1200:1400], np.mean(C_df[:,200:400], axis = 0), color = 'tab:blue', alpha = 1, linewidth = 1)
+ax31.plot(RT[1200:1400], np.mean(C_wf[:,200:400], axis = 0), color = 'tab:blue', alpha = 1, linewidth = 1)
+ax41.plot(RT[1200:1400], np.mean(C_twf[:,200:400], axis = 0), color = 'tab:blue', alpha = 1, linewidth = 1)
+
+#  ax00.set_title('Stim orientation $0^\circ$')
+#  ax10.set_title('Stim orientation $5^\circ$')
+#  ax20.set_title('Stim orientation $10^\circ$')
+#  ax30.set_title('Stim orientation $15^\circ$')
+#  ax40.set_title('Stim orientation $20^\circ$')
 
 ax01.set(ylim =(-70,0), xlabel = 'Time (ms)')
 ax11.set(ylim =(-70,0), xlabel = 'Time (ms)')
@@ -156,7 +155,7 @@ plt.show()
 #  fig.savefig('Traces?plot', dpi = 200)
 #  fig.savefig('FIG_2B.svg', dpi = 400)
 #  fig.savefig('FIG_S2B_GABA_random.png', dpi = 200)
-#  fig.savefig('FIG_S2B_freq_GABA.png', dpi = 200)
+fig.savefig('NO_GABA.png', dpi = 200)
 
 exit()
 

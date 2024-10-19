@@ -1,17 +1,18 @@
 import numpy as np
 from matplotlib import pyplot as plt
-plt.style.use('K_PAPER')
+#plt.style.use('K_PAPER')
 from scipy import stats
 import tqdm
 from scipy.interpolate import UnivariateSpline, CubicSpline
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 import matplotlib as mpl
 
+
 def rm(x, N = 10):
     return np.convolve(x, np.ones(N)/N, mode='valid')
 
-data = np.load('Spike_curves.npy')
-#  data[:, -6:] = 0
+data = np.load('Spike_curves_2024.npy')
+data[:, -6:] = 0
 angles = np.linspace(0,90,200)
 np.save('Spike_angles.npy', angles)
 fig, ax = plt.subplots(1,2, figsize = (12,6))
@@ -106,29 +107,73 @@ exit()
 
 
 #  exit()
-def tuning_vm(arr, s = .3, shift = 0):
+#  def tuning_vm(arr, s = .3, shift = 0):
+#      shift = np.radians(shift)*2 #von mises is for the full circle we only look at the half
+#      #  disp = 1/np.sqrt(np.deg2rad(s)/2)
+#      #  disp = 1/np.power(np.deg2rad(15)*2, 2)
+#      disp = 1/np.power(np.deg2rad(s)*2, 2) # relation from kappa to std is std**2 = 1/k
+#      arr_r = np.linspace(-np.pi,np.pi, 1000)
+#      val = stats.vonmises.pdf(arr, disp, loc = 0 + shift)
+#      val_r = stats.vonmises.pdf(arr_r, disp, loc = 0 + shift)
+#      #  plt.plot(arr_r, val)
+#      #  plt.plot(arr_r, val_r/np.max(val_r))
+#      #  plt.show()
+#      return val / np.max(val_r)
+
+def tuning_vm(arr, s = 11, shift = 0):
     shift = np.radians(shift)*2 #von mises is for the full circle we only look at the half
-    disp = 1/np.sqrt(np.deg2rad(s)/2)
-    arr_r = np.linspace(-np.pi,np.pi, 1000)
-    val = stats.vonmises.pdf(arr, disp, loc = 0 + shift)
-    val_r = stats.vonmises.pdf(arr_r, disp, loc = 0 + shift)
+    kappa = 1/np.power(np.deg2rad(s)*2, 2) # relation from kappa to std is std**2 = 1/k
+    #  print(kappa, 'kappa')
+    arr_r = np.linspace(-np.pi,np.pi, 100)
+    val = stats.vonmises.pdf(np.deg2rad(arr), kappa, loc = 0 + shift)
+    val_r = stats.vonmises.pdf(arr_r, kappa, loc = 0 + shift)
     return val / np.max(val_r)
 
+
+#  def create_weight_and_delay(regime, stim_alpha):
+#      N = np.random.poisson(9,1)[0]
+#      N_syn  = np.array([7,8,9,10,11,12,13])
+#      N = int(np.random.choice(N_syn, 1))
+#      weights = np.zeros(N)
+#      for i in range(N):
+#          if regime == 'clustered':
+#              #  disp = 1/np.sqrt(np.radians(11/2))
+#              #  rvs = stats.vonmises.rvs(kappa = disp, loc = 0, size = 1)[0]
+#              #  weights[i] = tuning_vm(rvs, 11, stim_alpha)
+#              disp = 1/np.power(np.deg2rad(15)*2, 2)
+#              rvs = stats.vonmises.rvs(kappa = disp, loc = 0, size = 1)[0]
+#              weights[i] = tuning_vm(rvs, 11, stim_alpha)
+#          else:
+#              #  rvs = np.random.uniform(-np.pi,np.pi)
+#              #  weights[i] = tuning_vm(rvs, 11, stim_alpha)
+#              rvs = np.random.uniform(-np.pi,np.pi)
+#              rvs = np.random.uniform(-90,90)
+#              weights[i] = tuning_vm(rvs, 11, stim_alpha)
+#      return np.mean(weights), N
+
 def create_weight_and_delay(regime, stim_alpha):
-    N = np.random.poisson(9,1)[0]
     N_syn  = np.array([7,8,9,10,11,12,13])
     N = int(np.random.choice(N_syn, 1))
     weights = np.zeros(N)
+    #  weights2 = np.zeros(N)
+    #  delays = np.random.poisson(30, N) + 200
+    #  stim_alpha = np.deg2rad(stim_alpha)
     for i in range(N):
         if regime == 'clustered':
-            disp = 1/np.sqrt(np.radians(11/2))
+            disp = 1/np.power(np.deg2rad(15)*2, 2)
             rvs = stats.vonmises.rvs(kappa = disp, loc = 0, size = 1)[0]
-            weights[i] = tuning_vm(rvs, 11, stim_alpha)
+            weights[i] = tuning_vm(np.rad2deg(rvs)/2, 11, stim_alpha)
         else:
             rvs = np.random.uniform(-np.pi,np.pi)
-            weights[i] = tuning_vm(rvs, 11, stim_alpha)
-    return np.mean(weights), N
-
+            #  rvs = np.random.uniform(-90,90)
+            weights[i] = tuning_vm(rvs/2, 11, stim_alpha)
+        #  rvs = np.random.uniform(-90,90)
+        #      rvs = np.random.uniform(-180,180)
+        #      weights[i] = tuning_vm(rvs, 11, stim_alpha)
+        #  rvs = np.random.uniform(-180,180)
+        #  weights2[i] = tuning_vm(rvs, 11, stim_alpha)
+    #  print(np.round(weights,2))
+    return  np.mean(weights), N
 
 
 
@@ -141,8 +186,10 @@ def fast_fit_old(w, N, intercept = 35, slope = -8.02):
     return intercept + slope*w*N
 
 def fast_fit(w, N):
-    #  return -47.8960*w -2.2518*N + 55.2755
-    return -47.28*w -2.28*N + 56.61
+    #  return -47.8960*w -2.2518*N + 56.2755
+    #  return -41.009*w -2.27*N + 55.41
+    #  return -41.8960*w -2.2418*N + 57.2755 #w8
+    return -38.4360*w -2.08818*N + 52.3255 #w85
 
 #  print(fast_fit(.7, 10))
 #  exit()
@@ -159,17 +206,18 @@ def sample_1k(stim_alpha):
 
 def sample_all(resolution = 200):
     angles = np.linspace(0,90,resolution)
-    Sav = np.zeros((resolution,1000))
-    Sav_old = np.zeros((resolution,1000))
+    Sav = np.zeros((resolution,10000))
+    Sav_old = np.zeros((resolution,10000))
     for i, angle in tqdm.tqdm(enumerate(angles)):
         Sav[i,:] = sample_1k(angle)
         #  Sav[i,:], Sav_old[i,:] = sample_1k(angle)
 
     #  return Sav, angles
+    angles = np.linspace(0,90,resolution)
     return Sav, Sav_old, angles
 
 
-fig, ax = plt.subplots(1,1, figsize = (10, 7), sharey = True)
+#  fig, ax = plt.subplots(1,1, figsize = (10, 7), sharey = True)
 orientation = np.load('P_bin_10.npy')
 orientation = np.nan_to_num(orientation, nan = 0)
 cs = CubicSpline(np.linspace(0,90,45),orientation) 
@@ -183,28 +231,28 @@ Sav, Sav_old, angles = sample_all()
 int_sav = []
 for i, Ek in enumerate(EK):
     Sav_tmp = Sav.copy()
-    Sav_old_tmp = Sav.copy()
+    #  Sav_old_tmp = Sav.copy()
     for j in range(200):
         Sav_slice = Sav[j,:].copy()
         Sav_slice[Sav_slice > Ek*orientation[j]] = 0
         Sav_slice[Sav_slice != 0] = 1
         Sav_tmp[j,:] = Sav_slice
 
-        Sav_slice = Sav_old[j,:].copy()
-        Sav_slice[Sav_slice > Ek*orientation[j]] = 0
-        Sav_slice[Sav_slice != 0] = 1
-        Sav_old_tmp[j,:] = Sav_slice
+        #  Sav_slice = Sav_old[j,:].copy()
+        #  Sav_slice[Sav_slice > Ek*orientation[j]] = 0
+        #  Sav_slice[Sav_slice != 0] = 1
+        #  Sav_old_tmp[j,:] = Sav_slice
 
-    Sav_tmp = np.sum(Sav_tmp, axis = 1)/1000
-    Sav_old_tmp = np.sum(Sav_old_tmp, axis = 1)/1000
+    Sav_tmp = np.sum(Sav_tmp, axis = 1)/10000
+    #  Sav_old_tmp = np.sum(Sav_old_tmp, axis = 1)/1000
     int_sav.append(Sav_tmp)
-    ax.plot(angles, Sav_tmp, label = Ek)
-    ax.plot(angles, Sav_old_tmp, label = Ek, ls = 'dashed')
+    #  ax.plot(angles, Sav_tmp, label = Ek)
+    #  ax.plot(angles, Sav_old_tmp, label = Ek, ls = 'dashed')
 
 int_sav = np.vstack(int_sav)
-np.save('Spike_curves', int_sav)
+np.save('Spike_curves_2024', int_sav)
 
-ax.set_ylim(-.05,1)
+#  ax.set_ylim(-.05,1)
 #  Sav_tmp = Sav_r.copy()
 #  Sav_tmp[Sav_r > 0] = 0
 #  Sav_tmp[Sav_tmp != 0] = 1
@@ -212,11 +260,11 @@ ax.set_ylim(-.05,1)
 #  ax.plot(angles, Sav_tmp, label = 'Random')
 
 
-ax.legend(title = 'Ek')
-ax.set_ylabel('Chance for dendritic spike')
-ax.set_xlabel('Angle from soma prefered')
-
-plt.show()
+#  ax.legend(title = 'Ek')
+#  ax.set_ylabel('Chance for dendritic spike')
+#  ax.set_xlabel('Angle from soma prefered')
+#
+#  plt.show()
 
 
 

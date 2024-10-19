@@ -133,7 +133,7 @@ ax2.scatter(angles, np.nanmean(high, axis = 0), color = colors[0])
 #  ax.set(xlabel = 'Tuning angle [deg]', ylabel = 'Firing freq [AU]', title = 'L5PC Neuron')
 #  ax2.set_xticks([0, 22.5, 45, 67.5, 90], [0, 22.5, 45, 67.5, 90])
 ax2.legend(title = r'Synaptic weight shift')
-ax2.set(xlabel = 'Tuning angle [deg]', ylabel = 'Firing frequency [Hz]', title = 'L5PC neuron morphology')
+ax2.set(xlabel = 'Tuning angle (deg)', ylabel = 'Firing frequency (Hz)', title = 'L5PC neuron morphology')
 
 ax1.set_xlim(-0.5,30)
 ax2.set_xlim(80,90)

@@ -10,14 +10,18 @@ def load_data(kind, angle, k_max):
     for i in range(10):
         #  data = np.load(f'../EK_effect/long_clamp_data_{i}_{kind}_{angle}_{k_max}.npy', allow_pickle = True)
         #  data = np.load(f'./EK_effect/EK_effect/no_noise_clamp_data_{i}_{kind}_{angle}_{k_max}.npy', allow_pickle = True)
-        data = np.load(f'./EK_short/no_noise_clamp_data_{i}_{kind}_{angle}_{k_max}.npy', allow_pickle = True)
+        #  data = np.load(f'./EK_short/no_noise_clamp_data_{i}_{kind}_{angle}_{k_max}.npy', allow_pickle = True)
+        #  data = np.load(f'./EK_effect/no_noise_clamp_data_{i}_{kind}_{angle}_{k_max}.npy', allow_pickle = True)
+        data = np.load(f'./EK_old/85no_noise_clamp_data_{i}_{kind}_{angle}_{k_max}.npy', allow_pickle = True)
         V = data.item().get('V')
         RT = data.item().get('RT')
-        V_arr.append(V)
+        plt.plot(V[::10])
+        V_arr.append(V[::10])
         del_arr.append(data.item().get('delays'))
         w_arr.append(data.item().get('EK'))
+    plt.show()
     V_arr = np.vstack(V_arr)
-    return V_arr,del_arr,w_arr, RT,
+    return V_arr,del_arr,w_arr, RT[::10],
 
 #  C_00_4, DC_00_4, wDC_00_4,  RT = load_data('clu', 0, 4)
 #  C_00_6, DC_00_6, wDC_00_6,  RT = load_data('clu', 0, 6)
@@ -113,22 +117,22 @@ idx10= []
 time = np.linspace(0,500,5000)
 for i in range(10):
     #  ax[0].plot((C_00_10[i,:50000]),  alpha = .2, color = 'hotpink')
-    if np.max(C_00_18[i,:5000]) > -8:
+    if np.max(C_00_18[i,:5000]) > -10:
         idx = np.argmax(C_00_18[i, :5000])
         val = np.roll(C_00_18[i,:5000], 2500 - idx)
         idx0.append(val)
 
         #  ax[0].plot((C_00_18[i,:50000]),  alpha = .2, color = 'hotpink')
         #  ax[0].plot(time, val,  alpha = .2, color = 'hotpink')
-    if np.max(C_00_18[i,5000:10000]) > -8:
+    if np.max(C_00_18[i,5000:10000]) > -10:
         idx = np.argmax(C_00_18[i, 5000:10000])
         val = np.roll(C_00_18[i,5000:10000], 2500 - idx)
         idx10.append(val)
         #  ax[0].plot((C_00_10[i,50000:100000]),  alpha = .2, color = 'teal')
         #  ax[0].plot(time,val,  alpha = .2, color = 'teal')
-    if np.max(C_00_6[i,5000:10000]) > -8:
+    if np.max(C_00_6[i,5000:10000]) > -10:
         idx = np.argmax(C_00_6[i, 5000:10000])
-        val = np.roll(C_00_6[i,5000:10000], 25000 - idx)
+        val = np.roll(C_00_6[i,5000:10000], 2500 - idx)
         idx4.append(val)
         #  ax[0].plot(time,val,  alpha = .2, color = 'goldenrod')
         #  ax[0].plot((C_00_4[i,50000:100000]),  alpha = .2, color = 'goldenrod')
@@ -150,7 +154,7 @@ ax[0].hlines(-30, 200, 430, ls = '--', color = 'grey')
 ax[0].legend(title = 'Mean trace')
 ax[0].text(310, -30, 'Vm threshold', color = 'grey', size = 20)
 ax[0].set(xlabel = 'Time [ms]', ylabel = 'Vm [mV]', title = 'Example traces at $\Delta\Theta = 0^\circ$')
-
+#
 ax[0].text(-0.1, 1.05, 'C', fontweight = 'bold', transform = ax[0].transAxes, fontsize = 20)
 ax[1].text(-0.1, 1.05, 'D', fontweight = 'bold', transform = ax[1].transAxes, fontsize = 20)
 for i in range(10):
@@ -185,7 +189,7 @@ mean_before_00 = np.array([np.nanmean(t_C00_6),
                            np.nanmean(t_C00_16),
                            np.nanmean(t_C00_18)])
 
-mean_after_00 = np.array([np.nanmean(mean_before_00),
+mean_after_00 = np.array([np.nanmean(t_C00_6),
                           np.nanmean(delta_C00_6),
                           np.nanmean(delta_C00_8),
                           np.nanmean(delta_C00_10),
@@ -213,13 +217,21 @@ std_after_00 = np.array([np.nanstd(t_C00_10),
 
 #  DEK = np.array([0, 4,6,8,10])
 DEK = np.array([0,6,8,10, 12, 14, 16, 18])
-ax[1].errorbar(DEK, mean_after_00, yerr = std_after_00, color = 'black', label = '$\Delta E_K shifted$', ls = '--', marker = 'o', capsize = 4)
+ax[1].errorbar(DEK, mean_after_00, yerr = std_after_00, color = 'black', label = '$\Delta E_K shifted$', ls = '--', marker = '', capsize = 4)
+ax[1].scatter(np.ones_like(t_C00_6)*DEK[0], t_C00_6, color = 'black', alpha = .5, marker = '*')
+ax[1].scatter(np.ones_like(delta_C00_6)*DEK[1], delta_C00_6, color = 'black'      , alpha = .5, marker = '*')
+ax[1].scatter(np.ones_like(delta_C00_8)*DEK[2], delta_C00_8, color = 'black'      , alpha = .5, marker = '*')
+ax[1].scatter(np.ones_like(delta_C00_10)*DEK[3], delta_C00_10, color = 'black'    , alpha = .5, marker = '*')
+ax[1].scatter(np.ones_like(delta_C00_12)*DEK[4], delta_C00_12, color = 'black'    , alpha = .5, marker = '*')
+ax[1].scatter(np.ones_like(delta_C00_14)*DEK[5], delta_C00_14, color = 'black'    , alpha = .5, marker = '*')
+ax[1].scatter(np.ones_like(delta_C00_16)*DEK[6], delta_C00_16, color = 'black'    , alpha = .5, marker = '*')
+ax[1].scatter(np.ones_like(delta_C00_18)*DEK[7], delta_C00_18, color = 'black'    , alpha = .5, marker = '*')
 #  ax[1].legend(title = 'Run')
-ax[1].set(xlabel = 'Change in EK [mV]', ylabel = ' Plateau duration over -30mV [ms]', title = 'Change in NMDA plateau length at $\Delta\Theta = 0^\circ$', ylim = (30, 140))
+ax[1].set(xlabel = 'Change in EK [mV]', ylabel = ' Plateau duration over -30mV [ms]', title = 'Change in NMDA plateau length at $\Delta\Theta = 0^\circ$', ylim = (20, 120))
 
 plt.savefig('NMDA_plateau', dpi=200)
-plt.savefig('FIG_2CD_extra.svg', dpi=400)
-plt.savefig('FIG_2CD_extra.pdf', dpi=400)
+plt.savefig('FIG_2CD_85.svg', dpi=400)
+plt.savefig('FIG_2CD_85.pdf', dpi=400)
 
 plt.show()
 

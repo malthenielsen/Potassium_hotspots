@@ -1,13 +1,13 @@
 import numpy as np
 from matplotlib import pyplot as plt
 #  plt.style.use('K_PAPER')
-from point_dendrite import *
+from point_dendrite_old import *
 from multiprocessing import Pool, cpu_count
 import tqdm
 
 def create_weight_and_delay_foldover(regime, stim_alpha, N_align, w):
-    np.random.seed(299)
-    weights = np.ones(N_align)*w
+    np.random.seed(1000)
+    weights = np.ones(N_align)*w*.85
     delays = np.random.poisson(80, N_align) + 200
     #  for i in range(N_align):
     #      disp = 1/np.sqrt(np.radians(11/2))
@@ -102,14 +102,14 @@ def run(i):
 #  run(8)
 #  exit()
 
-if __name__ == '__main__':
-    index = np.arange(0,8,1)
-    pool = Pool(8)
-    pool.map(run, index)
-    pool.close()
-    pool.join()
-
-exit()
+#  if __name__ == '__main__':
+#      index = np.arange(0,8,1)
+#      pool = Pool(8)
+#      pool.map(run, index)
+#      pool.close()
+#      pool.join()
+#
+#  exit()
 #
 def plot(N, val):
     print(val)
@@ -123,6 +123,7 @@ def plot(N, val):
     for k in k_max:
         param, E = restart_param()
         param['weights'] = weights
+        param['weights2'] = weights*0
         param['N_syn'] = N_syn
         E['K'] += k
         data = simulation(param, E, delays, False, change = False)
@@ -130,7 +131,7 @@ def plot(N, val):
         arr[idx,:] = V_baseline
         idx += 1
         #  plt.plot(data['V'] - V_baseline)
-    np.save(f'transition_to_nonlinear_{val}', arr)
+    np.save(f'85transition_to_nonlinear_{val}', arr)
 
 
 #  plot(8, .65)
@@ -149,14 +150,14 @@ def plot(N, val):
 #  plot(8, .45)
 #  plot(8, .4)
 
-data_6 = np.load('transition_to_nonlinear_0.6.npy')
-data_65 = np.load('transition_to_nonlinear_0.65.npy')
-data_55 = np.load('transition_to_nonlinear_0.55.npy')
-data_5 = np.load('transition_to_nonlinear_0.5.npy')
-data_7 = np.load('transition_to_nonlinear_0.7.npy')
-data_8 = np.load('transition_to_nonlinear_0.8.npy')
-data_4 = np.load('transition_to_nonlinear_0.4.npy')
-data_45 = np.load('transition_to_nonlinear_0.45.npy')
+data_6 =  np.load('85transition_to_nonlinear_0.6.npy')
+data_65 = np.load('85transition_to_nonlinear_0.65.npy')
+data_55 = np.load('85transition_to_nonlinear_0.55.npy')
+data_5 =  np.load('85transition_to_nonlinear_0.5.npy')
+data_7 =  np.load('85transition_to_nonlinear_0.7.npy')
+data_8 =  np.load('85transition_to_nonlinear_0.8.npy')
+data_4 =  np.load('85transition_to_nonlinear_0.4.npy')
+data_45 = np.load('85transition_to_nonlinear_0.45.npy')
 
 dat_arr = [data_4, data_45, data_5, data_55, data_6, data_65, data_7, data_8]
 fig, ax = plt.subplots(1,3, figsize = (12,6), sharey = True, sharex = False)
@@ -182,24 +183,25 @@ for axi in ax.ravel():
 ax[2].spines['left'].set_visible(True)
 ax[2].spines['bottom'].set_visible(True)
 for i in range(6):
-    ax[0].plot(dat_arr[i][0,25000:42000]- np.mean(dat_arr[i][0,10000:15000]), color = plt.cm.inferno_r(Norm[i]))
+    ax[0].plot(dat_arr[i][0,25000:45000]- np.mean(dat_arr[i][0,10000:11000]), color = plt.cm.inferno_r(Norm[i]))
     #  ax[1].plot(dat_arr[i][1,25000:42000]- np.mean(dat_arr[i][1,10000:15000]), color = plt.cm.inferno_r(Norm[i]))
-    ax[1].plot(dat_arr[i][1,25000:42000]- np.mean(dat_arr[i][1,10000:15000]), color = plt.cm.inferno_r(Norm[i]))
-    ax[2].plot(dat_arr[i][3,25000:42000]- np.mean(dat_arr[i][3,10000:15000]), color = plt.cm.inferno_r(Norm[i]))
+    ax[1].plot(dat_arr[i][2,25000:45000]- np.mean(dat_arr[i][2,10000:11000]), color = plt.cm.inferno_r(Norm[i]))
+    ax[2].plot(dat_arr[i][3,25000:45000]- np.mean(dat_arr[i][3,10000:11000]), color = plt.cm.inferno_r(Norm[i]))
 
 #  ax[0].legend([.55, .6, .65], title = 'Mean spine input')
 
 ax[0].text(-0.1, 1.05, 'E', fontweight = 'bold', transform = ax[0].transAxes, fontsize = 20)
-ax[0].set_title('$\Delta E_K = 0mV$')
+ax[0].set_title(r'$\Delta E_K = 0mV$')
 #  ax[1].set_title('$\Delta E_K = 6mV$')
-ax[1].set_title('$\Delta E_K = 6mV$')
+ax[1].set_title(r'$\Delta E_K = 12mV$')
 
-ax[2].set_title('$\Delta E_K = 18mV$')
-fig.colorbar(cmap, label = 'Mean spine input')
-plt.savefig('transition_fig', dpi = 200)
+ax[2].set_title(r'$\Delta E_K = 18mV$')
+#  fig.colorbar(cmap, label = 'Mean spine input')
+plt.savefig('2E.pdf', dpi = 200)
+#  plt.savefig
     
-plt.savefig('FIG_2E.svg', dpi = 400)
-plt.savefig('FIG_2E.pdf', dpi = 400)
+#  plt.savefig('FIG_2E.svg', dpi = 400)
+#  plt.savefig('FIG_2E.pdf', dpi = 400)
 
 plt.show()
 

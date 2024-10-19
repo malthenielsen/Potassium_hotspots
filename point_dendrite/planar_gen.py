@@ -7,7 +7,7 @@ from multiprocessing import Pool, cpu_count
 def create_weight_and_delay_foldover(regime, stim_alpha, N_align, w):
     np.random.seed(299)
     weights = np.ones(N_align)*w
-    delays = np.random.poisson(80, N_align) + 200
+    delays = np.random.poisson(30, N_align) + 200 #Was 80 previously
     #  for i in range(N_align):
     #      disp = 1/np.sqrt(np.radians(11/2))
     #      rvs = stats.vonmises.rvs(kappa = disp, loc = 0, size = 1)[0]
@@ -85,7 +85,7 @@ def npick(i):
     elif i < 70:
         return 13
 
-def run(i):
+def run2(i):
     res = np.zeros(100)
     val = np.arange(0.1, 1.1, .1)
     N = npick(i)
@@ -97,6 +97,7 @@ def run(i):
     for idx, k in enumerate(k_max):
         param, E = restart_param()
         param['weights'] = weights
+        param['weights2'] = weights*0
         param['N_syn'] = N_syn
         E['K'] += k
         data = simulation(param, E, delays, False, change = False)
@@ -104,7 +105,7 @@ def run(i):
         res[idx] = np.max(data['V'])
         if res[idx] > -25:
             break
-    np.save(f'./plane_plot/res_{np.round(val[i%10],2)}_{N}_301', res)
+    np.save(f'./plane_plot/res_{np.round(val[i%10],2)}_{N}_2024', res)
 
 
 #  run(8)
@@ -112,6 +113,6 @@ def run(i):
 if __name__ == '__main__':
     index = np.arange(0,70,1)
     pool = Pool(cpu_count() - 5)
-    pool.map(run, index)
+    pool.map(run2, index)
     pool.close()
     pool.join()

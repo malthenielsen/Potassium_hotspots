@@ -98,15 +98,6 @@ def tuning_vm(arr, s = .3, shift = 0):
     val_r = stats.vonmises.pdf(arr_r, kappa, loc = 0 + shift)
     return val / np.max(val_r)
 
-def tuning_vm(arr, s = 11, shift = 0):
-    shift = np.radians(shift)*2 #von mises is for the full circle we only look at the half
-    kappa = 1/np.power(np.deg2rad(s)*2, 2) # relation from kappa to std is std**2 = 1/k
-    #  print(kappa, 'kappa')
-    arr_r = np.linspace(-np.pi,np.pi, 100)
-    val = stats.vonmises.pdf(np.deg2rad(arr), kappa, loc = 0 + shift)
-    val_r = stats.vonmises.pdf(arr_r, kappa, loc = 0 + shift)
-    return val / np.max(val_r)
-
 def create_nmda(delay, w):
     stim = {"kind":1, "x2":0.01, "s2":0, "delay":delay, 'A': 1.17, 'B':1.17, 'weight':w}
     return stim
@@ -121,20 +112,19 @@ def create_gaba(delay,w):
     return stim
 
 
-def create_stim_dict(delay, weight, weight2, N_burst = 1):
+def create_stim_dict(angles, idx):
     ''' Each stimuli is first activated at a delay time, here we spawn stimuli from their earlier create functions'''
     all_stim = []
+    N_burst = len(angles)
     for k in range(N_burst):
+        delay, weight, N_syn, weights2 = create_spike_and_delay('clustered', angles[k], idx)
+        #  delay, weight, N_syn, weights2 = create_weight_and_delay('clustered', angles[k])
         for i in range(len(delay)):
             #  ran = np.random.randint(-5,5,1)[0]
             ran = 10
-            all_stim.append(create_nmda(delay[i] + ran + 500*k, weight[i]))
-            all_stim.append(create_ampa(delay[i] + ran + 500*k, weight[i]))
-            all_stim.append(create_gaba(np.random.randint(0,500,1)[0] + 500*k, weight2[i]))
-            #  all_stim.append(create_gaba(np.random.randint(0,500,1)[0] + 500*k, weight2[i]))
-            #  all_stim.append(create_gaba(np.random.randint(0,500,1)[0] + 500*k, weight2[i]))
-            #  all_stim.append(create_gaba(np.random.randint(0,500,1)[0] + 500*k, weight2[i]))
-            #  all_stim.append(create_gaba(np.random.randint(0,500,1)[0] + 500*k, weight2[i]))
+            all_stim.append(create_nmda(delay[i] + ran + 200*k, weight[i]))
+            all_stim.append(create_ampa(delay[i] + ran + 200*k, weight[i]))
+            #  all_stim.append(create_gaba(0 + np.random.randint(0,500,1)[0] + 500*k, weight2[i]))
     return all_stim
 
 def Isyn(stims, time, dt, V):
@@ -178,7 +168,7 @@ def dEk(dE, N, w, k_max):
     dEkM = k_max
     return gamma*N*w - 1/100*dE/(dEkM - dE)
 
-def simulation(param, E, delays, plot = True, change = False):
+def simulation(param, E, delays, idx, plot = True, change = False):
     dt = 0.01
     I_bin = []
     ch_bin = []
@@ -189,8 +179,8 @@ def simulation(param, E, delays, plot = True, change = False):
     C = 2
     RT = []
 
-    stims = create_stim_dict(delays, param['weights'], param['weights2'], 3)
-    N = 150000
+    stims = create_stim_dict(np.arange(0,45, 5), idx)
+    N = 220000
     I_chan = np.zeros((11,N))
     I_g = np.zeros((11,N))
     I_syn_comp = np.zeros((3,N))
@@ -311,82 +301,66 @@ def simulation(param, E, delays, plot = True, change = False):
 
     return return_dict
 
-#  def create_weight_and_delay(regime, stim_alpha):
-#      N_syn  = np.array([7,8,9,10,11,12,13])
-#      N = int(np.random.choice(N_syn, 1))
-#      weights = np.zeros(N)
-#      weights2 = np.zeros(N)
-#      delays = np.random.poisson(30, N) + 200
-#      for i in range(N):
-#          if regime == 'clustered':
-#              disp = 1/np.power(np.deg2rad(15)*2, 2)
-#              rvs = stats.vonmises.rvs(kappa = disp, loc = 0, size = 1)[0]
-#              weights[i] = tuning_vm(np.deg2rad(rvs), 11, stim_alpha)
-#          else:
-#              rvs = np.random.uniform(-np.pi,np.pi)
-#              rvs = np.random.uniform(-90,90)
-#              weights[i] = tuning_vm(rvs, 11, stim_alpha)
-#          rvs = np.random.uniform(-90,90)
-#          #      rvs = np.random.uniform(-180,180)
-#          #      weights[i] = tuning_vm(rvs, 11, stim_alpha)
-#          #  rvs = np.random.uniform(-180,180)
-#          weights2[i] = tuning_vm(rvs, 11, stim_alpha)
-#      return delays, weights, N, weights2
-
-#  def create_spike_and_delay(regime, stim_alpha, i):
-#      np.random.seed(i)
-#      if regime == 'clustered':
-#          disp = 1/np.power(np.deg2rad(15)*2, 2)
-#          rvs = stats.vonmises.rvs(kappa = disp, loc = 0, size = 1)[0]
-#          weight = tuning_vm(np.deg2rad(rvs), 11, stim_alpha)
-#      else:
-#          rvs = np.random.uniform(-np.pi,np.pi)
-#          rvs = np.random.uniform(-90,90)
-#          weight = tuning_vm(rvs, 11, stim_alpha)
-#      print(weight)
-#
-#      N = int(np.random.poisson(weight*44,1))
-#
-#      if N == 0:
-#          weights = np.ones(1)
-#          delays = np.ones(1)*(-1000)
-#          N = 1
-#      else:
-#          weights = np.ones(N)
-#          delays = np.random.poisson(30, N) + 200
-#
-#      weights2 = np.ones_like(N)
-#
-#      #  print( delays, weights, N, weights2)
-#      print(N)
-#      return delays, weights*0.2, N, weights2
-
-def create_weight_and_delay(regime, stim_alpha, i):
-    np.random.seed(i)
+def create_weight_and_delay(regime, stim_alpha):
     N_syn  = np.array([7,8,9,10,11,12,13])
     N = int(np.random.choice(N_syn, 1))
     weights = np.zeros(N)
-    weights2 = np.ones(N)
-    delays = np.random.poisson(80, N) + 200
-    print(delays)
-    #  stim_alpha = np.deg2rad(stim_alpha)
+    weights2 = np.zeros(N)
+    delays = np.random.poisson(30, N) + 200
     for i in range(N):
         if regime == 'clustered':
             disp = 1/np.power(np.deg2rad(15)*2, 2)
             rvs = stats.vonmises.rvs(kappa = disp, loc = 0, size = 1)[0]
-            weights[i] = tuning_vm(np.rad2deg(rvs)/2, 11, stim_alpha)
+            weights[i] = tuning_vm(np.deg2rad(rvs), 11, stim_alpha)
         else:
             rvs = np.random.uniform(-np.pi,np.pi)
-            #  rvs = np.random.uniform(-90,90)
-            weights[i] = tuning_vm(rvs/2, 11, stim_alpha)
+            rvs = np.random.uniform(-90,90)
+            weights[i] = tuning_vm(rvs, 11, stim_alpha)
         rvs = np.random.uniform(-90,90)
         #      rvs = np.random.uniform(-180,180)
         #      weights[i] = tuning_vm(rvs, 11, stim_alpha)
         #  rvs = np.random.uniform(-180,180)
-        #  weights2[i] = tuning_vm(rvs, 11, stim_alpha)
-    print(np.mean(weights), stim_alpha)
-    #  print(np.round(weights,2))
-    return delays, weights*1, N, weights2
+        weights2[i] = tuning_vm(rvs, 11, stim_alpha)
+    return delays, weights*0.65, N, weights2
+
+def create_spike_and_delay(regime, stim_alpha, i):
+    np.random.seed(i)
+    if regime == 'clustered':
+        disp = 1/np.power(np.deg2rad(15)*2, 2)
+        rvs = stats.vonmises.rvs(kappa = disp, loc = 0, size = 1)[0]
+        weight = tuning_vm(np.deg2rad(rvs), 11, stim_alpha)
+    else:
+        rvs = np.random.uniform(-np.pi,np.pi)
+        rvs = np.random.uniform(-90,90)
+        weight = tuning_vm(rvs, 11, stim_alpha)
+    print(weight)
+
+    delays = np.random.uniform(0,1,100)
+    delays = np.where(delays > 1/1000*weight*44)[0]
+    delays += 200
+    weights = np.ones_like(delays)
+    weights2 = np.ones_like(delays)
+    print(delays)
+    if len(delays) == 0:
+        weights = np.ones(1)
+        delays = np.ones(1)*(-1000)
+        N = 1
+
+
+
+    #  N = int(np.random.poisson(weight*22,1))
+    #
+    #  if N == 0:
+    #      weights = np.ones(1)
+    #      delays = np.ones(1)*(-1000)
+    #      N = 1
+    #  else:
+    #      weights = np.ones(N)
+    #      delays = np.random.poisson(30, N) + 200
+    #
+    #  weights2 = np.ones_like(N)
+
+    return delays, weights*0.25, N, weights2
 
     
 
