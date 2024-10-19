@@ -1,9 +1,9 @@
 import numpy as np
 from matplotlib import pyplot as plt
-plt.style.use('K_PAPER')
+#  plt.style.use('K_PAPER')
 import time
 from scipy import stats
-import tqdm
+#  import tqdm
 from matplotlib.gridspec import GridSpec
 import argparse
 
@@ -153,13 +153,13 @@ for i in range(1,11):
             activity.append(activity[-1])
 
     t0 = np.random.randint(0, 52,1)
-    fire.append(np.random.poisson(30,N)+t0)
+    fire.append(np.random.poisson(80,N)+t0)
 
     t0 = np.random.randint(0, 50,1) + Tstep
-    fire.append(np.random.poisson(30,N)+t0)
+    fire.append(np.random.poisson(80,N)+t0)
 
     t0 = np.random.randint(0, 50,1) + 2*Tstep
-    fire.append(np.random.poisson(30,N)+t0)
+    fire.append(np.random.poisson(80,N)+t0)
     
 
 xsyn = np.hstack(xsyn)
@@ -184,11 +184,11 @@ def run(kind):
     #  print(D*dt/(dx**2))
     #  print(fire)
 
-    for i in tqdm.tqdm(range(N)):
+    for i in (range(N)):
         #  for j in range(10):
             #  if kind == 1:
-        grid[xsyn, ysyn] += 6500*activity*gauss(fire/dt, 65/dt, i)
-        grid_in[xsyn, ysyn] -= 6500*activity*gauss(fire/dt, 65/dt, i)*0.406
+        grid[xsyn, ysyn] += 6000*activity*gauss(fire/dt, 65/dt, i)
+        grid_in[xsyn, ysyn] -= 6000*activity*gauss(fire/dt, 65/dt, i)*0.406
             #  if kind == 2:
             #      grid[xsyn, ysyn] += activity[j]*upper_tri(1000, i, fire[j])
             #  if kind == 3:
@@ -226,8 +226,8 @@ def run(kind):
 
 measure_gauss, average, measure, measure_inn = run(1)
 if center == 5:
-    np.save(f'measure_NAK_new_{int(decay)}_{Tstep}_{int(alpha)}', measure)
-    np.save(f'measure_NAK_inn_{int(decay)}_{Tstep}_{int(alpha)}', measure_inn)
+    np.save(f'80measure_NAK_new_{int(decay)}_{Tstep}_{int(alpha)}', measure)
+    np.save(f'80measure_NAK_inn_{int(decay)}_{Tstep}_{int(alpha)}', measure_inn)
 
 elif center == 100:
     np.save(f'measure_NAK_new_{int(decay)}_{Tstep}_all', measure)

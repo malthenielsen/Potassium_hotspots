@@ -1,6 +1,6 @@
 import numpy as np
 from matplotlib import pyplot as plt
-#  plt.style.use('K_PAPER')
+plt.style.use('K_PAPER')
 import time
 from scipy import stats
 #  import tqdm
@@ -13,7 +13,6 @@ parser.add_argument('--decay', type=float, help='An integer constant')
 parser.add_argument('--alpha', type=float, help='A string constant')
 parser.add_argument('--center', type=int, help='A string constant')
 parser.add_argument('--time', type=int, help='A string constant')
-parser.add_argument('--initial', type=int, help='A string constant')
 
 args = parser.parse_args()
 
@@ -21,9 +20,8 @@ decay = args.decay
 alpha = args.alpha
 center = args.center
 Tstep = args.time
-initial = args.initial
 
-np.random.seed(1)
+np.random.seed(101)
 
 time = np.arange(0,100,.01)
 
@@ -49,16 +47,13 @@ def lower_tri(g,time,ts):
 def gauss(mu, sigma, time):
     return stats.norm.pdf(time, mu, sigma)
 
-def tuning_vm(arr, s = .3, shift = 0):
+def tuning_vm(arr, s = 11, shift = 0):
     shift = np.radians(shift)*2 #von mises is for the full circle we only look at the half
     kappa = 1/np.power(np.deg2rad(s)*2, 2) # relation from kappa to std is std**2 = 1/k
     #  print(kappa, 'kappa')
     arr_r = np.linspace(-np.pi,np.pi, 100)
     val = stats.vonmises.pdf(np.deg2rad(arr), kappa, loc = 0 + shift)
     val_r = stats.vonmises.pdf(arr_r, kappa, loc = 0 + shift)
-    #  plt.plot(arr_r, val_r)
-    #  plt.scatter(np.deg2rad(arr), val)
-    #  plt.show()
     return val / np.max(val_r)
 
 #  tuning_vm(np.random.uniform(0,180,10), 11, 0)
@@ -73,19 +68,20 @@ def fn_normal(N,s = 11, shift = 0, S = 15):
         N = 2
     #  rvs = 1 - np.abs(np.random.normal(0, sigma, N))
     #  rvs = np.abs(np.random.normal(0, np.deg2rad(11)/2, N))
-    rvs = stats.vonmises.rvs(kappa = disp, loc = 0, size = N)
+    #  rvs = stats.vonmises.rvs(kappa = disp, loc = 0, size = N)
     
     #  print(np.rad2deg(rvs)/2)
     #  return(np.mean(tuning_vm(rvs, s, shift)))
-    return(tuning_vm(np.rad2deg(rvs)/2, s, shift))
+    return(tuning_vm(np.deg2rad(11), s, shift))
+    #  return rvs
 
 def fn_random(N, s, shift):
-    rvs = np.random.uniform(-90,90,N)
+    rvs = np.random.uniform(-180,180,1)
     #  return np.random.uniform(0,1,N)
-    return(tuning_vm(rvs, s, shift))
+    #  return rvs
+    return(tuning_vm(np.deg2rad(11), s, rvs))
+
     
-
-
 
 
 
@@ -130,66 +126,61 @@ fire = []
 #  alpha = 0
 for i in range(1,11):
     #  N = np.random.randint(7,13,1)[0]
-    N = 10
-    xsyn.append(np.random.randint(l*10*i, l*10*(i+1), N))
-    ysyn.append(np.random.randint(0, int(circ*10),N))
-    if not initial:
-        xsyn.append(xsyn[-1]-1)
-        ysyn.append(ysyn[-1]-1)
-        xsyn.append(xsyn[-1]-1)
-        ysyn.append(ysyn[-1]-1)
+    Nsyn = 10
+    alphas = [alpha]
     if i == center:
-        activity.append(fn_normal(N, 11, alpha))
-        if not initial:
-            activity.append(activity[-1])
-            activity.append(activity[-1])
+        disp = 1/np.power(np.deg2rad(15)*2, 2)
+        rvs = stats.vonmises.rvs(kappa = disp, loc = 0, size = Nsyn)
     else:
-        activity.append(fn_random(N, 11, alpha))
-        if not initial:
-            activity.append(activity[-1])
-            activity.append(activity[-1])
+        rvs = np.random.uniform(-180,180, Nsyn)
 
-    t0 = np.random.randint(0, 52,1)
-    fire.append(np.random.poisson(80,N)+t0)
+    for t0, stim_alpha in enumerate(alphas):
+        weights = np.zeros(Nsyn)
+        for idx in range(Nsyn):
+            weights[idx] = tuning_vm(np.rad2deg(rvs[idx])/2, 11, stim_alpha)
+                #  weights[idx] = tuning_vm(rvs, 11, stim_alpha)
+
+
+        weight = np.mean(weights)
+        delays = np.random.uniform(0,1,130)
+        delays = np.where(delays < 1/1000*weight*80)[0]
+        delays += 300*t0 + 50
+        print(weight, i)
+        weights = np.ones_like(delays)
+        if len(delays) > 0:
+            #  weights = np.ones(1)
+            #  delays = np.ones(1)*(-50000)
+            #  N = 1
+        #  N = len(weights)
+            N = len(delays)
+
+            xsyn.append(np.ones(N)*np.random.randint(l*10*i, l*10*(i+1), N))
+            ysyn.append(np.ones(N)*np.random.randint(0, int(circ*10),N))
+            activity.append(np.ones(N))
+
+            #  t0 = np.random.randint(0, 52,1)
+            #  fire.append(np.random.poisson(30,N)+t0)
+            fire.append(delays)
     
-    if not initial:
-        t0 = np.random.randint(0, 50,1) + Tstep
-        fire.append(np.random.poisson(80,N)+t0)
 
-        t0 = np.random.randint(0, 50,1) + 2*Tstep
-        fire.append(np.random.poisson(80,N)+t0)
-    
-
-xsyn = np.hstack(xsyn)
-ysyn = np.hstack(ysyn)
+xsyn = np.hstack(xsyn).astype(int)
+ysyn = np.hstack(ysyn).astype(int)
 activity = np.hstack(activity)
 fire = np.hstack(fire)
-print(sum(activity), 'sum activity')
+print(fire)
+print(sum(activity), 'number of sites')
 
-if initial:
-    np.save('fire_weight', fire)
 
-x_local = np.random.randint(50*10,60*10,10)
-y_local = np.random.randint(0,int(circ*10),10)
-print(x_local, y_local)
-
+np.save(f'fire_{alpha}', fire)
+#  exit()
 
 
 N = 50000
 
 def run(kind):
     grid = np.zeros((l*10*11, int(circ*10)))
-    print(grid.shape)
-    if initial:
-        N  =1000000
-    else:
-        N = 500000
-
+    N = 200000
     measure = np.zeros((40,N))
-    measure_local = np.zeros((10,N+2))
-
-    measure_local[:,-2] = (x_local - 500)/100
-    measure_local[:,-1] = y_local/(circ*10)
     sums = np.zeros(10)
     average = []
     dx = 1/10
@@ -199,9 +190,11 @@ def run(kind):
     print(fire)
 
     for i in (range(N)):
+        #  if N > 200000:
+            #  dt = 0.005
         #  for j in range(10):
             #  if kind == 1:
-        grid[xsyn, ysyn] += 5000*activity*gauss(fire/dt, 65/dt, i)
+        grid[xsyn, ysyn] += 7000*activity*gauss(fire/dt, 65/dt, i)
             #  if kind == 2:
             #      grid[xsyn, ysyn] += activity[j]*upper_tri(1000, i, fire[j])
             #  if kind == 3:
@@ -216,7 +209,6 @@ def run(kind):
         grid += laplacian[1:-1, 1:-1]*D*dt*(1/(dx**2))
         for j in range(40):
             measure[j,i] = np.mean(grid[j*25, :])
-        measure_local[:, i] = grid[x_local,y_local]
         #  grid[grid > 0] -= 0.001*dt
         #  grid[grid < 0] = 0
         #  grid -= 0.025*grid/(grid + 1.5)*dt
@@ -225,18 +217,15 @@ def run(kind):
             average.append(grid.mean(axis = 1))
     #  return measure
     time = N*dt 
-    np.save('grid_local', measure_local)
     return grid.T, average, measure[:,::100]
 
 measure_gauss, average, measure = run(1)
 #  np.save('measure_NAK_new_29_short', measure)
-if center == 5 and initial:
-    np.save(f'measure_NAK_onoff_{int(decay)}_{Tstep}_{int(alpha)}_{initial}', measure)
 if center == 5:
-    np.save(f'measure_NAK_night_{int(decay)}_{Tstep}_{int(alpha)}_{initial}', measure)
+    np.save(f'measure_NAK_onoff_{int(decay)}_{Tstep}_{int(alpha)}', measure)
     #  np.save(f'measure_NAK_inn_{int(decay)}_{Tstep}_{int(alpha)}', measure_inn)
 else:
-    np.save(f'measure_NAK_night_{int(decay)}_{Tstep}_none', measure)
+    np.save(f'measure_NAK_new_{int(decay)}_{Tstep}_none', measure)
     #  np.save(f'measure_NAK_inn_{int(decay)}_{Tstep}_none', measure_inn)
 #  fig, ax = plt.subplots(3,1, figsize = (15,5), sharex = True)
 #  ax[0].imshow(measure_gauss, aspect = 'auto')

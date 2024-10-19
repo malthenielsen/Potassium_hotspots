@@ -3,11 +3,11 @@ from matplotlib import pyplot as plt
 plt.style.use('K_PAPER')
 
 
-data1 = np.load('measure_NAK_new_19_300_0.npy')
-data2 = np.load('measure_NAK_new_29_300_0.npy')
-data3 = np.load('measure_NAK_new_39_300_0.npy')
+data1 = np.load('data_night/measure_NAK_night_19_300_0_0.npy')
+data2 = np.load('data_night/measure_NAK_night_29_300_0_0.npy')
+data3 = np.load('data_night/measure_NAK_night_39_300_0_0.npy')
 data1in = np.load('measure_NAK_inn_19_300_0.npy')
-data2in = np.load('measure_NAK_inn_29_300_0.npy')
+data2in = np.load('data_cell/80measure_NAK_inn_29_300_0.npy')
 data3in = np.load('measure_NAK_inn_39_300_0.npy')
 
 data_null_1 = np.load('measure_NAK_new_19_300_none.npy')
@@ -54,7 +54,7 @@ for idx, data in enumerate(data_arr):
         ax[idx].plot(time,DKE[i,:] + 95, color = plt.cm.copper_r(abs(i-5)/5) )
         #  ax[idx].plot(time,DKE[i,:] + 95, color = plt.cm.copper(abs(i)/10) )
     ax[idx].set_title('$K_{dec} = $'+ str(pmat[idx]) + ' E-8 $m/s$') 
-    ax[idx].set_ylabel('$\Delta E_{K^+} [mV]$', rotation = 90)
+    ax[idx].set_ylabel('$\Delta E_{K^+} (mV)$', rotation = 90)
 
 
 for idx, data in enumerate(data_null_arr):
@@ -75,7 +75,7 @@ for idx, data in enumerate(data_null_arr):
 ax[0].legend()
 
 #  ax[idx].set(xlabel = 'Time [ms]', ylabel = '$\Delta E_{K^+}$', title = '$\Delta E_{K^+}$ changes along the dendrite')
-ax[-1].set_xlabel('Time[ms]')
+ax[-1].set_xlabel('Time (ms)')
 
 sm = plt.cm.ScalarMappable(cmap='copper_r', norm=plt.Normalize(vmin=0, vmax=50))
 sm.set_array([])  # Set an empty array
@@ -83,11 +83,11 @@ sm.set_array([])  # Set an empty array
 # Add a colorbar
 #  cbar = plt.colorbar(sm, ax=ax[0])
 cbar = fig.colorbar(sm, ax=ax, orientation='vertical', fraction=0.02, pad=0.04)
-cbar.set_label('Distance from cluster segment $[\mu m]$')
+cbar.set_label('Distance from cluster segment $(\mu m)$')
 
 
 #  fig.suptitle('$\Delta E_{K^+}$ changes along the dendrite \n at different $K^+$ pump strengths')
-fig.savefig('Temporal_plot_KPUMP', dpi = 400)
+fig.savefig('Temporal_plot_KPUMP', dpi = 200)
 
 #  fig, ax = plt.subplots(2, 1, figsize = (15,5), sharex =  True, sharey = True)
 fig, ax = plt.subplots(1, 1, figsize = (15,3), sharex =  True, sharey = True)
@@ -115,9 +115,9 @@ for idx, data in enumerate(data_arr[1:2]):
         #  ax[idx].plot(time,DKE[i,:] + 95, color = plt.cm.copper(abs(i)/10) )
     #  ax.set_title('$K_{dec} = $'+ str(pmat[1]) + ' E-8 $m/s$')
     ax.legend()
-    ax.set_ylabel('$\Delta E_{K^+} [mV]$', rotation = 90)
+    ax.set_ylabel('$\Delta E_{K^+} (mV)$', rotation = 90)
     ax.grid('x')
-    ax.set_xlabel('Time [ms]')
+    ax.set_xlabel('Time (ms)')
 plt.tight_layout()
 
 #  for idx, data in enumerate(data_all_arr[1:2]):
