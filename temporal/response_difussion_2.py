@@ -1,9 +1,9 @@
 import numpy as np
 from matplotlib import pyplot as plt
-#  plt.style.use('K_PAPER')
+plt.style.use('K_PAPER')
 import time
 from scipy import stats
-#  import tqdm
+import tqdm
 from matplotlib.gridspec import GridSpec
 
 import argparse
@@ -13,7 +13,6 @@ parser.add_argument('--decay', type=float, help='An integer constant')
 parser.add_argument('--alpha', type=float, help='A string constant')
 parser.add_argument('--center', type=int, help='A string constant')
 parser.add_argument('--time', type=int, help='A string constant')
-parser.add_argument('--initial', type=int, help='A string constant')
 
 args = parser.parse_args()
 
@@ -21,9 +20,8 @@ decay = args.decay
 alpha = args.alpha
 center = args.center
 Tstep = args.time
-initial = args.initial
 
-np.random.seed(1)
+np.random.seed(101)
 
 time = np.arange(0,100,.01)
 
@@ -64,6 +62,7 @@ def tuning_vm(arr, s = .3, shift = 0):
 #  tuning_vm(np.random.uniform(0,180,10), 11, 0)
 #  exit()
 
+
 def fn_normal(N,s = 11, shift = 0, S = 15):
     disp = 1/np.power(np.deg2rad(S)*2, 2)
     #  print(1/np.power(np.deg2rad(11)*2, 2))
@@ -80,7 +79,7 @@ def fn_normal(N,s = 11, shift = 0, S = 15):
     return(tuning_vm(np.rad2deg(rvs)/2, s, shift))
 
 def fn_random(N, s, shift):
-    rvs = np.random.uniform(-90,90,N)
+    rvs = np.random.uniform(-180,180,N)
     #  return np.random.uniform(0,1,N)
     return(tuning_vm(rvs, s, shift))
     
@@ -133,63 +132,41 @@ for i in range(1,11):
     N = 10
     xsyn.append(np.random.randint(l*10*i, l*10*(i+1), N))
     ysyn.append(np.random.randint(0, int(circ*10),N))
-    if not initial:
-        xsyn.append(xsyn[-1]-1)
-        ysyn.append(ysyn[-1]-1)
-        xsyn.append(xsyn[-1]-1)
-        ysyn.append(ysyn[-1]-1)
+    xsyn.append(xsyn[-1]-1)
+    ysyn.append(ysyn[-1]-1)
+    xsyn.append(xsyn[-1]-1)
+    ysyn.append(ysyn[-1]-1)
     if i == center:
         activity.append(fn_normal(N, 11, alpha))
-        if not initial:
-            activity.append(activity[-1])
-            activity.append(activity[-1])
+        activity.append(activity[-1])
+        activity.append(activity[-1])
     else:
         activity.append(fn_random(N, 11, alpha))
-        if not initial:
-            activity.append(activity[-1])
-            activity.append(activity[-1])
+        activity.append(activity[-1])
+        activity.append(activity[-1])
 
     t0 = np.random.randint(0, 52,1)
-    fire.append(np.random.poisson(80,N)+t0)
-    
-    if not initial:
-        t0 = np.random.randint(0, 50,1) + Tstep
-        fire.append(np.random.poisson(80,N)+t0)
+    fire.append(np.random.poisson(30,N)+t0)
 
-        t0 = np.random.randint(0, 50,1) + 2*Tstep
-        fire.append(np.random.poisson(80,N)+t0)
+    t0 = np.random.randint(0, 50,1) + Tstep
+    fire.append(np.random.poisson(30,N)+t0)
+
+    t0 = np.random.randint(0, 50,1) + 2*Tstep
+    fire.append(np.random.poisson(30,N)+t0)
     
 
 xsyn = np.hstack(xsyn)
 ysyn = np.hstack(ysyn)
 activity = np.hstack(activity)
 fire = np.hstack(fire)
-print(sum(activity), 'sum activity')
-
-if initial:
-    np.save('fire_weight', fire)
-
-x_local = np.random.randint(50*10,60*10,10)
-y_local = np.random.randint(0,int(circ*10),10)
-print(x_local, y_local)
-
 
 
 N = 50000
 
 def run(kind):
     grid = np.zeros((l*10*11, int(circ*10)))
-    print(grid.shape)
-    if initial:
-        N  =1000000
-    else:
-        N = 500000
-
+    N = 200000
     measure = np.zeros((40,N))
-    measure_local = np.zeros((10,N+2))
-
-    measure_local[:,-2] = (x_local - 500)/100
-    measure_local[:,-1] = y_local/(circ*10)
     sums = np.zeros(10)
     average = []
     dx = 1/10
@@ -198,10 +175,10 @@ def run(kind):
     print(D*dt/(dx**2))
     print(fire)
 
-    for i in (range(N)):
+    for i in tqdm.tqdm(range(N)):
         #  for j in range(10):
             #  if kind == 1:
-        grid[xsyn, ysyn] += 5000*activity*gauss(fire/dt, 65/dt, i)
+        grid[xsyn, ysyn] += 6500*activity*gauss(fire/dt, 65/dt, i)
             #  if kind == 2:
             #      grid[xsyn, ysyn] += activity[j]*upper_tri(1000, i, fire[j])
             #  if kind == 3:
@@ -216,7 +193,6 @@ def run(kind):
         grid += laplacian[1:-1, 1:-1]*D*dt*(1/(dx**2))
         for j in range(40):
             measure[j,i] = np.mean(grid[j*25, :])
-        measure_local[:, i] = grid[x_local,y_local]
         #  grid[grid > 0] -= 0.001*dt
         #  grid[grid < 0] = 0
         #  grid -= 0.025*grid/(grid + 1.5)*dt
@@ -225,18 +201,15 @@ def run(kind):
             average.append(grid.mean(axis = 1))
     #  return measure
     time = N*dt 
-    np.save('grid_local', measure_local)
     return grid.T, average, measure[:,::100]
 
 measure_gauss, average, measure = run(1)
 #  np.save('measure_NAK_new_29_short', measure)
-if center == 5 and initial:
-    np.save(f'measure_NAK_onoff_{int(decay)}_{Tstep}_{int(alpha)}_{initial}', measure)
 if center == 5:
-    np.save(f'measure_NAK_night_{int(decay)}_{Tstep}_{int(alpha)}_{initial}', measure)
+    np.save(f'30measure_NAK_new_{int(decay)}_{Tstep}_{int(alpha)}', measure)
     #  np.save(f'measure_NAK_inn_{int(decay)}_{Tstep}_{int(alpha)}', measure_inn)
 else:
-    np.save(f'measure_NAK_night_{int(decay)}_{Tstep}_none', measure)
+    np.save(f'30measure_NAK_new_{int(decay)}_{Tstep}_none', measure)
     #  np.save(f'measure_NAK_inn_{int(decay)}_{Tstep}_none', measure_inn)
 #  fig, ax = plt.subplots(3,1, figsize = (15,5), sharex = True)
 #  ax[0].imshow(measure_gauss, aspect = 'auto')
@@ -253,3 +226,4 @@ else:
 #
 #
 #
+

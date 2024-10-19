@@ -23,7 +23,7 @@ center = args.center
 Tstep = args.time
 initial = args.initial
 
-np.random.seed(1)
+np.random.seed(111)
 
 time = np.arange(0,100,.01)
 
@@ -80,7 +80,7 @@ def fn_normal(N,s = 11, shift = 0, S = 15):
     return(tuning_vm(np.rad2deg(rvs)/2, s, shift))
 
 def fn_random(N, s, shift):
-    rvs = np.random.uniform(-90,90,N)
+    rvs = np.random.uniform(-180,180,N)
     #  return np.random.uniform(0,1,N)
     return(tuning_vm(rvs, s, shift))
     
@@ -169,27 +169,14 @@ print(sum(activity), 'sum activity')
 if initial:
     np.save('fire_weight', fire)
 
-x_local = np.random.randint(50*10,60*10,10)
-y_local = np.random.randint(0,int(circ*10),10)
-print(x_local, y_local)
-
 
 
 N = 50000
 
 def run(kind):
     grid = np.zeros((l*10*11, int(circ*10)))
-    print(grid.shape)
-    if initial:
-        N  =1000000
-    else:
-        N = 500000
-
+    N = 500000
     measure = np.zeros((40,N))
-    measure_local = np.zeros((10,N+2))
-
-    measure_local[:,-2] = (x_local - 500)/100
-    measure_local[:,-1] = y_local/(circ*10)
     sums = np.zeros(10)
     average = []
     dx = 1/10
@@ -201,7 +188,7 @@ def run(kind):
     for i in (range(N)):
         #  for j in range(10):
             #  if kind == 1:
-        grid[xsyn, ysyn] += 5000*activity*gauss(fire/dt, 65/dt, i)
+        grid[xsyn, ysyn] += 7500*activity*gauss(fire/dt, 65/dt, i)
             #  if kind == 2:
             #      grid[xsyn, ysyn] += activity[j]*upper_tri(1000, i, fire[j])
             #  if kind == 3:
@@ -216,7 +203,6 @@ def run(kind):
         grid += laplacian[1:-1, 1:-1]*D*dt*(1/(dx**2))
         for j in range(40):
             measure[j,i] = np.mean(grid[j*25, :])
-        measure_local[:, i] = grid[x_local,y_local]
         #  grid[grid > 0] -= 0.001*dt
         #  grid[grid < 0] = 0
         #  grid -= 0.025*grid/(grid + 1.5)*dt
@@ -225,18 +211,15 @@ def run(kind):
             average.append(grid.mean(axis = 1))
     #  return measure
     time = N*dt 
-    np.save('grid_local', measure_local)
     return grid.T, average, measure[:,::100]
 
 measure_gauss, average, measure = run(1)
 #  np.save('measure_NAK_new_29_short', measure)
-if center == 5 and initial:
-    np.save(f'measure_NAK_onoff_{int(decay)}_{Tstep}_{int(alpha)}_{initial}', measure)
 if center == 5:
-    np.save(f'measure_NAK_night_{int(decay)}_{Tstep}_{int(alpha)}_{initial}', measure)
+    np.save(f'80measure_NAK_onoff_{int(decay)}_{Tstep}_{int(alpha)}_{initial}', measure)
     #  np.save(f'measure_NAK_inn_{int(decay)}_{Tstep}_{int(alpha)}', measure_inn)
 else:
-    np.save(f'measure_NAK_night_{int(decay)}_{Tstep}_none', measure)
+    np.save(f'measure_NAK_new_{int(decay)}_{Tstep}_none', measure)
     #  np.save(f'measure_NAK_inn_{int(decay)}_{Tstep}_none', measure_inn)
 #  fig, ax = plt.subplots(3,1, figsize = (15,5), sharex = True)
 #  ax[0].imshow(measure_gauss, aspect = 'auto')

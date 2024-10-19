@@ -1,35 +1,60 @@
 import numpy as np
 from matplotlib import pyplot as plt
-plt.style.use('K_PAPER')
+#plt.style.use('K_PAPER')
 #  import os
 import subprocess
+from multiprocessing import Pool
 
 #  def runner():
 #  runner()
 
 
+def run(i):
+    if i == 0:
+        subprocess.call(f"python3 response_difussion.py --decay {19} --alpha 0 --center 5 --time 300 --initial 0", shell = True)
+    elif i == 1:
+        subprocess.call(f"python3 response_difussion.py --decay {29} --alpha 0 --center 5 --time 300 --initial 0", shell = True)
+    elif i == 2:
+        subprocess.call(f"python3 response_difussion.py --decay {39} --alpha 0 --center 5 --time 300 --initial 0", shell = True)
+    elif i == 3:
+        print('yo')
+        #subprocess.call(f"python3 both_difussion.py --decay {29} --alpha 0 --center 5 --time 300", shell = True)
+    elif i == 4:
+        print('yo')
+        #subprocess.call(f"python3 both_difussion.py --decay {29} --alpha 0 --center 50 --time 300", shell = True)
+    elif i == 5:
+        subprocess.call(f"python3 response_difussion.py --decay {29} --alpha 0 --center 50 --time 300 --initial 0", shell = True)
+    elif i == 6:
+        subprocess.call(f"python3 frequency_difussion.py --decay 29 --alpha {0} --center 5 --time 300", shell = True)
+    elif i == 7:
+        subprocess.call(f"python3 frequency_difussion.py --decay 29 --alpha {22.5} --center 5 --time 300", shell = True)
+    elif i == 8:
+        subprocess.call(f"python3 frequency_difussion.py --decay 29 --alpha {45} --center 5 --time 300", shell = True)
+    elif i == 9:
+        subprocess.call(f"python3 response_difussion.py --decay 29 --alpha {0} --center 5 --time 300 --initial 1", shell = True)
+    elif i == 10:
+        subprocess.call(f"python3 response_difussion.py --decay 29 --alpha {22.5} --center 5 --time 300 --initial 1", shell = True)
+    elif i == 11:
+        subprocess.call(f"python3 response_difussion.py --decay 29 --alpha {45} --center 5 --time 300 --initial 1", shell = True)
+    elif i == 12:
+        subprocess.call(f"python3 response_difussion.py --decay 29 --alpha {0} --center 5 --time 300 --initial 0", shell = True)
+    elif i == 13:
+        subprocess.call(f"python3 response_difussion.py --decay 29 --alpha {22.5} --center 5 --time 300 --initial 0", shell = True)
+    elif i == 14:
+        subprocess.call(f"python3 response_difussion.py --decay 29 --alpha {45} --center 5 --time 300 --initial 0", shell = True)
+    elif i == 15:
+        subprocess.call(f"python3 response_difussion.py --decay 29 --alpha 0 --center 5 --time 200 --initial 0", shell = True)
+    elif i == 16:
+        subprocess.call(f"python3 response_difussion.py --decay 29 --alpha 0 --center 5 --time 300 --initial 0", shell = True)
+    elif i == 17:
+        subprocess.call(f"python3 response_difussion.py --decay 29 --alpha 0 --center 5 --time 400 --initial 0", shell = True)
 
-decays = [19, 29, 39]
-for d in decays:
-    subprocess.call(f"python both_difussion.py --decay {d} --alpha 0 --center 50 --time 300", shell = True)
 
-#  decays = [29]
+if __name__ == '__main__':
+    index = np.arange(12,13,1)
+    pool = Pool(1)
+    pool.map(run, index)
+    pool.close()
+    pool.join()
 
-#  for d in decays:
-    #  subprocess.call(f"python both_difussion.py --decay {d} --alpha 0 --center 5 --time 300", shell = True)
-
-#  for d in decays:
-    #  subprocess.call(f"python both_difussion.py --decay {d} --alpha 0 --center 50 --time 300", shell = True)
-
-#  for d in decays:
-#      subprocess.call(f"python both_difussion.py --decay {d} --alpha 0 --center 100 --time 300", shell = True)
-#
-#  alphas = [0, 22, 45]
-#  for d in alphas:
-    #  subprocess.call(f"python response_difussion.py --decay 29 --alpha {d} --center 5 --time 300", shell = True)
-
-#  time = [200, 300, 400]
-#  for t in time:
-    #  subprocess.call(f"python response_difussion.py --decay 29 --alpha 0 --center 5 --time {t}", shell = True)
-
-#  subprocess.call(f"python response_difussion.py --decay 29 --alpha 0 --center 50 --time 300", shell = True)
+#subprocess.call(f"python3 response_difussion.py --decay 29 --alpha 0 --center 50 --time 300", shell = True)
