@@ -1,7 +1,7 @@
 import numpy as np 
 from matplotlib import pyplot as plt 
 #  from channels import *
-from Nassi_channels import *
+from Ionic_channels import *
 import tqdm
 from scipy import stats
 #  plt.style.use('science')
