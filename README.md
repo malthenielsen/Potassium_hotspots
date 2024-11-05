@@ -1,4 +1,4 @@
-# Local changes in potassium ions regulates input integration in active dendrites
+# Local changes in potassium ions regulate input integration in active dendrites
 
 
 Figure 1 was primarly generated using the folder "Statistical_potassium_shift". 
