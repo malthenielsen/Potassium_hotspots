@@ -24,7 +24,8 @@ usiing nmda_gif.py in the DynSys_neuron folder
 
 
 ## Figure 4.
-Point dendrite was created as hardcoded neuron model inside of each model. To inhibit the neuron with synapses we used the function create_segments.py. From this we created different scripts warrying the weight og the size of the neuron to see how it would addapt
+Point dendrite was created as hardcoded neuron model inside of each model. To inhibit the neuron with synapses we used the function create_segments.py. From this we created different scripts warrying the weight og the size of the neuron to see how it would addapt. For more details see readme in the abstract neuron folder.
+Figures was created using the scripts carrying the label of the subfigure
 
 
 ## SI
