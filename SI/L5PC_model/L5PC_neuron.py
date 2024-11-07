@@ -2,8 +2,8 @@ import numpy as np
 from matplotlib import pyplot as plt
 #  plt.style.use('K_PAPER')
 from neuron import h, gui
-#  h.nrn_load_dll('./mod_shai/x86_64/libnrnmech.so')
-h.nrn_load_dll('/home/nordentoft/Documents/Potassium_and_dendrites/fractal_neuron/mod_shai/x86_64/libnrnmech.so')
+h.nrn_load_dll('./mod_shai/x86_64/libnrnmech.so')
+#h.nrn_load_dll('/home/nordentoft/Documents/Potassium_and_dendrites/fractal_neuron/mod_shai/x86_64/libnrnmech.so')
 h.load_file('stdrun.hoc')
 import subprocess
 from scipy import stats, interpolate
@@ -28,7 +28,7 @@ class MyCell:
     def __init__(self):
         morph_reader = h.Import3d_Neurolucida3()
         #  morph_reader.input('/home/nordentoft/Documents/Potassium_and_dendrites/supplementary_model/morphologies/cell3.asc')
-        morph_reader.input('./morphologies/cell3.asc')
+        morph_reader.input('cell3.asc')
         i3d = h.Import3d_GUI(morph_reader, 0)
         i3d.instantiate(self)
 
@@ -140,14 +140,14 @@ def create_neuron(ek, mix_ek, stim_alpha, not_keep, ID):
         soma.cm = 1
 
 
-    not_keep = 0
+    #not_keep = 0
 
-    stim_alpha = 10
+    #stim_alpha = 10
     test = 'none'
-    ID = 0
+    #ID = 0
     dek = 1
     #  ek =10
-    mix_ek = 2
+    #mix_ek = 2
 
     if not_keep:
         print('made new')
@@ -159,26 +159,26 @@ def create_neuron(ek, mix_ek, stim_alpha, not_keep, ID):
     idx = np.where(char_arr[:,2] != 0)
     char_arr = char_arr[idx[0],:]
     StimVec = StimVec[idx[0],:]
-    for apic in m.apic:
-        idx = 10
-        id_list = np.arange(0,idx, 1)
-        np.random.shuffle(id_list)
-        cluster = int(2*idx//4)
-        mixed = 0
-        idx_cluster = id_list[:cluster]
-        for index, seg in enumerate(apic):
-            if index in idx_cluster:
-                if ek != 0:
-                    seg.SK_E2.dek += 1*ek
-                    seg.SKv3_1.dek += 1*ek
-                    seg.Im.dek += 1*ek
-                    seg.e_pas += .6*ek
-            else:
-                if ek != 0:
-                    seg.SK_E2.dek += 1*mix_ek
-                    seg.SKv3_1.dek += 1*mix_ek
-                    seg.Im.dek += 1*mix_ek
-                    seg.e_pas += .6*mix_ek
+   #for apic in m.apic:
+   #    idx = 10
+   #    id_list = np.arange(0,idx, 1)
+   #    np.random.shuffle(id_list)
+   #    cluster = int(2*idx//4)
+   #    mixed = 0
+   #    idx_cluster = id_list[:cluster]
+   #    for index, seg in enumerate(apic):
+   #        if index in idx_cluster:
+   #            if ek != 0:
+   #                seg.SK_E2.dek += 1*ek
+   #                seg.SKv3_1.dek += 1*ek
+   #                seg.Im.dek += 1*ek
+   #                seg.e_pas += .6*ek
+   #        else:
+   #            if ek != 0:
+   #                seg.SK_E2.dek += 1*mix_ek
+   #                seg.SKv3_1.dek += 1*mix_ek
+   #                seg.Im.dek += 1*mix_ek
+   #                seg.e_pas += .6*mix_ek
 
 
     synapses_list, netstims_list, netcons_list, rnd_list, vecT_list= [], [], [], [], []
@@ -192,7 +192,7 @@ def create_neuron(ek, mix_ek, stim_alpha, not_keep, ID):
         if dek != 0:
             nmda_syn.e = 1
 
-        scalar = 8e-1*weight_alt
+        scalar = 30e-1*weight_alt
 
         vecStim = h.VecStim()
         stim = StimVec[i,:]
@@ -205,7 +205,7 @@ def create_neuron(ek, mix_ek, stim_alpha, not_keep, ID):
 
         vec = h.Vector(np.sort(stim.astype(int)))
         netCon_ampa = h.NetCon(vecStim, ampa_syn)
-        netCon_ampa.weight[0] = 1*scalar*weight
+        netCon_ampa.weight[0] = scalar*weight
         netcons_list.append(netCon_ampa)
         synapses_list.append(ampa_syn)
         vecT_list.append(vecStim)
@@ -214,7 +214,7 @@ def create_neuron(ek, mix_ek, stim_alpha, not_keep, ID):
         vecStim = h.VecStim()
         vec = h.Vector(np.sort(stim.astype(int)))
         netCon_nmda = h.NetCon(vecStim, nmda_syn)
-        netCon_nmda.weight[0] = 1*scalar*weight
+        netCon_nmda.weight[0] = scalar*weight
         netcons_list.append(netCon_nmda)
         synapses_list.append(nmda_syn)
         vecT_list.append(vecStim)
@@ -225,7 +225,7 @@ def create_neuron(ek, mix_ek, stim_alpha, not_keep, ID):
     V_vec = h.Vector().record(m.soma[0](.99)._ref_v)
     t_vec = h.Vector().record(h._ref_t)
     h.finitialize(-50)
-    h.tstop = 1500
+    h.tstop = 1200
     h.run()
     #  plt.plot(t_vec, V_vec)
     #  plt.plot(t_vec, D_vec)
@@ -262,10 +262,10 @@ def run(i):
     time.sleep(i)
     ID = int(time.time())
     soma_final = []
-    dek_r = [.8, 1, 1.2]
+    dek_r = [0.95, 1, 1.05]
     for index, a in enumerate(angles):
         for idx, ek in enumerate(dek_r):
-            if a == 0 and ek == 1:
+            if a == 0 and ek == 0.95:
                 remix = True
             else:
                 remix = 0
@@ -275,13 +275,13 @@ def run(i):
             #  break
         #  break
 
-    np.save(f'./data/dataL5PC_weight/soma_{i}', np.vstack(soma_final))
+    np.save(f'./dataL5PC_weight/soma_{i}', np.vstack(soma_final))
     #  np.save(f'./dataL5PC_weight/soma_{i}')
 
 #  run(0)
 if __name__ == '__main__':
     index = np.arange(0,15,1)
-    pool = Pool(6)
+    pool = Pool(15)
     pool.map(run, index)
     pool.close()
     pool.join()

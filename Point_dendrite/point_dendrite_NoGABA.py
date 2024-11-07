@@ -1,7 +1,7 @@
 import numpy as np 
 from matplotlib import pyplot as plt 
 #  from channels import *
-from Nassi_channels import *
+from Ionic_channels import *
 import tqdm
 from scipy import stats
 #  plt.style.use('science')
@@ -52,50 +52,12 @@ def I_nmda(sdict, V_ext, dt):
     syn_act_2 = g*sdict['weight']*(sdict['B'] - sdict['A'])
     return syn_act, sdict, syn_act_2
 
-#  def I_gaba(sdict, V_ext, dt):
-#      VCa = -27.6*np.log(1.5/0.001)/2
-#      fv = 1 / ( 1 + np.exp((-V_ext - 20)/2))
-#      tau = 10
-#      dS = fv - sdict['S']/tau
-#      g = 2.52916*1e-9
-#      sdict['S'] += dS*dt
-#      syn_act = -g*sdict['weight']*sdict['S']*(V_ext - VCa)
-#      syn_act_2 = g*sdict['weight']*sdict['S']
-#      return syn_act, sdict, syn_act_2
-
-def I_gaba(sdict, V_ext, dt):
-    tau1 = 1
-    tau2 = 4
-    Vnmda = -82
-    #  g = -8e-7
-    #  g = -3.5e-8
-    #  g = -.7e-7
-    g = .5e-7 #friday
-    #  g = 7e-6*1.2/4
-
-    dA = -sdict['A']/tau1
-    dB = -sdict['B']/tau2
-    sdict['A'] += dA*dt
-    sdict['B'] += dB*dt
-
-    syn_act = sdict['weight']*g*(sdict['B'] - sdict['A'])*(V_ext - Vnmda)
-    return syn_act, sdict, -syn_act
-
-
-#  def tuning_vm(arr, s = .3, shift = 0):
-#      shift = np.radians(shift)*2 #von mises is for the full circle we only look at the half
-#      disp = 1/np.power(np.deg2rad(s)*2, 2)
-#      arr_r = np.linspace(-np.pi,np.pi, 1000)
-#      val = stats.vonmises.pdf(arr, disp, loc = 0 + shift)
-#      val_r = stats.vonmises.pdf(arr_r, disp, loc = 0 + shift)
-#      return val / np.max(val_r)
-
 def tuning_vm(arr, s = .3, shift = 0):
-    #  shift = np.radians(shift) #von mises is for the full circle we only look at the half
-    kappa = 1/np.power(np.deg2rad(s)*2, 2) # relation from kappa to std is std**2 = 1/k
-    arr_r = np.linspace(-np.pi,np.pi, 100)
-    val = stats.vonmises.pdf(arr, kappa, loc = 0 + shift)
-    val_r = stats.vonmises.pdf(arr_r, kappa, loc = 0 + shift)
+    shift = np.radians(shift)*2 #von mises is for the full circle we only look at the half
+    disp = 1/np.sqrt(np.deg2rad(s)/2)
+    arr_r = np.linspace(-np.pi,np.pi, 1000)
+    val = stats.vonmises.pdf(arr, disp, loc = 0 + shift)
+    val_r = stats.vonmises.pdf(arr_r, disp, loc = 0 + shift)
     return val / np.max(val_r)
 
 def tuning_vm(arr, s = 11, shift = 0):
@@ -115,32 +77,22 @@ def create_ampa(delay, w):
     stim = {"kind":0 ,"s1":.01, "delay":delay, 'A':2.6, 'B':2.6, 'weight':w}
     return stim
 
-def create_gaba(delay,w):
-    #  stim = {"kind":2, "delay":delay, "S":0.1, "weight":w}
-    stim = {"kind":2 ,"s1":.01, "delay":delay, 'A':2.6, 'B':2.6, 'weight':w}
-    return stim
-
-
-def create_stim_dict(angles, idx):
+def create_stim_dict(delay, weight, N_burst = 1):
     ''' Each stimuli is first activated at a delay time, here we spawn stimuli from their earlier create functions'''
     all_stim = []
-    N_burst = len(angles)
     for k in range(N_burst):
-        #  delay, weight, N_syn, weights2 = create_spike_and_delay('clustered', angles[k], idx)
-        delay, weight, N_syn, weights2 = create_weight_and_delay('clustered', angles[k], idx)
         for i in range(len(delay)):
             #  ran = np.random.randint(-5,5,1)[0]
             ran = 0
-            all_stim.append(create_nmda(delay[i] + ran + 200*k, weight[i]))
-            all_stim.append(create_ampa(delay[i] + ran + 200*k, weight[i]))
-            #  all_stim.append(create_gaba(0 + np.random.randint(0,500,1)[0] + 500*k, weight2[i]))
+            all_stim.append(create_nmda(delay[i] + ran + 500*k, weight[i]))
+            all_stim.append(create_ampa(delay[i] + ran + 500*k, weight[i]))
     return all_stim
 
 def Isyn(stims, time, dt, V):
     ''' Function that monitors whitch synapses that are active at a given time, and add all active synapses contribution'''
     I_return = 0
-    I_comp = np.zeros(3)
-    I_cc = np.zeros(3)
+    I_comp = np.zeros(2)
+    I_cc = np.zeros(2)
     for stim in stims:
         delay = stim["delay"]
         if time > delay and time < delay + 200:
@@ -148,16 +100,10 @@ def Isyn(stims, time, dt, V):
                 syn_act, stim, syn_act_2 = I_nmda(stim, dt, V)
                 I_comp[0] += syn_act
                 I_cc[0] += syn_act_2
-            elif stim["kind"] == 0:
+            else:
                 syn_act, stim = I_ampa(stim, dt, V)
                 I_comp[1] += syn_act
                 I_cc[1] += syn_act/V
-            elif stim["kind"] == 2:
-                syn_act, stim, syn_act_2 = I_gaba(stim, dt, V)
-                syn_act *= -1
-                I_comp[2] += syn_act
-                I_cc[2] += syn_act_2
-                
             I_return += syn_act
     return I_return, I_comp, I_cc
 
@@ -177,7 +123,7 @@ def dEk(dE, N, w, k_max):
     dEkM = k_max
     return gamma*N*w - 1/100*dE/(dEkM - dE)
 
-def simulation(param, E, delays, idx, plot = True, change = False):
+def simulation(param, E, delays, plot = True, change = False):
     dt = 0.01
     I_bin = []
     ch_bin = []
@@ -188,13 +134,13 @@ def simulation(param, E, delays, idx, plot = True, change = False):
     C = 2
     RT = []
 
-    stims = create_stim_dict(np.arange(0,45, 5), idx)
-    N = 220000
+    stims = create_stim_dict(delays, param['weights'], 3)
+    N = 150000
     I_chan = np.zeros((11,N))
     I_g = np.zeros((11,N))
-    I_syn_comp = np.zeros((3,N))
-    I_syn_cc = np.zeros((3,N))
-    I_exp = np.zeros((3,N))
+    I_syn_comp = np.zeros((2,N))
+    I_syn_cc = np.zeros((2,N))
+    I_exp = np.zeros((2,N))
     E_arr = np.zeros(N)
     labs = []
     dE = 0
@@ -310,6 +256,24 @@ def simulation(param, E, delays, idx, plot = True, change = False):
 
     return return_dict
 
+#  def create_weight_and_delay(regime, stim_alpha):
+#      #  N = np.random.poisson(9,1)[0]
+#      #  N = np.random.poisson(9,1)[0]
+#      N_syn  = np.array([7,8,9,10,11,12,13])
+#      N = int(np.random.choice(N_syn, 1))
+#      weights = np.zeros(N)
+#      delays = np.random.poisson(80, N) + 200
+#      for i in range(N):
+#          if regime == 'clustered':
+#              disp = 1/np.sqrt(np.radians(11/2))
+#              rvs = stats.vonmises.rvs(kappa = disp, loc = 0, size = 1)[0]
+#              weights[i] = tuning_vm(rvs, 11, stim_alpha)
+#              #  print(':)')
+#          else:
+#              rvs = np.random.uniform(-np.pi,np.pi)
+#              weights[i] = tuning_vm(rvs, 11, stim_alpha)
+#      return delays, weights, N
+
 def create_weight_and_delay(regime, stim_alpha, i):
     np.random.seed(i)
     N_syn  = np.array([7,8,9,10,11,12,13])
@@ -317,6 +281,7 @@ def create_weight_and_delay(regime, stim_alpha, i):
     weights = np.zeros(N)
     weights2 = np.zeros(N)
     delays = np.random.poisson(80, N) + 200
+    print(delays)
     #  stim_alpha = np.deg2rad(stim_alpha)
     for i in range(N):
         if regime == 'clustered':
@@ -332,61 +297,12 @@ def create_weight_and_delay(regime, stim_alpha, i):
         #      weights[i] = tuning_vm(rvs, 11, stim_alpha)
         #  rvs = np.random.uniform(-180,180)
         weights2[i] = tuning_vm(rvs, 11, stim_alpha)
-    print(np.mean(weights), stim_alpha)
+    #  print(np.mean(weights), stim_alpha)
     #  print(np.round(weights,2))
-    return delays, weights*1, N, weights2
-
-def create_spike_and_delay(regime, stim_alpha, i):
-    np.random.seed(i)
-    #  stim_alpha = np.deg2rad(stim_alpha)
-    N_syn  = np.array([7,8,9,10,11,12,13])
-    N = int(np.random.choice(N_syn, 1))
-    weights = np.zeros(N)
-    for i in range(N):
-        if regime == 'clustered':
-            disp = 1/np.power(np.deg2rad(15)*2, 2)
-            rvs = stats.vonmises.rvs(kappa = disp, loc = 0, size = 1)[0]
-            weights[i]= tuning_vm(np.rad2deg(rvs)/2, 11, stim_alpha)
-
-    weight = np.mean(weights)
-
-    delays = np.random.uniform(0,1,60)
-    delays = np.where(delays < 1/1000*weight*190)[0]
-    delays += 200
-    weights = np.ones_like(delays)
-    weights2 = np.ones_like(delays)
-    print(len(delays), stim_alpha, weight)
-    if len(delays) == 0:
-        weights = np.ones(1)
-        delays = np.ones(1)*(50000)
-        N = 1
-    N = len(weights)
-
-
-
-    #  N = int(np.random.poisson(weight*22,1))
-    #
-    #  if N == 0:
-    #      weights = np.ones(1)
-    #      delays = np.ones(1)*(-1000)
-    #      N = 1
-    #  else:
-    #      weights = np.ones(N)
-    #      delays = np.random.poisson(30, N) + 200
-    #
-    #  weights2 = np.ones_like(N)
-
-    return delays, weights*1, N, weights2
-
-    
-
-
-
-
+    return delays, weights*1, N
 
 
 
 '''Param dict is all values the simulation needs to alter during its runtime, the dict is updated for each time step by the update_channels function'''
-
 
 

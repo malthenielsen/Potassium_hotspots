@@ -1,7 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 #  plt.style.use('K_PAPER')
-from point_dendrite_old import *
+from point_dendrite_NoGABA import *
 from multiprocessing import Pool, cpu_count
 import tqdm
 
@@ -150,14 +150,14 @@ def plot(N, val):
 #  plot(8, .45)
 #  plot(8, .4)
 
-data_6 =  np.load('85transition_to_nonlinear_0.6.npy')
-data_65 = np.load('85transition_to_nonlinear_0.65.npy')
-data_55 = np.load('85transition_to_nonlinear_0.55.npy')
-data_5 =  np.load('85transition_to_nonlinear_0.5.npy')
-data_7 =  np.load('85transition_to_nonlinear_0.7.npy')
-data_8 =  np.load('85transition_to_nonlinear_0.8.npy')
-data_4 =  np.load('85transition_to_nonlinear_0.4.npy')
-data_45 = np.load('85transition_to_nonlinear_0.45.npy')
+data_6 =  np.load('85limit/85transition_to_nonlinear_0.6.npy')
+data_65 = np.load('85limit/85transition_to_nonlinear_0.65.npy')
+data_55 = np.load('85limit/85transition_to_nonlinear_0.55.npy')
+data_5 =  np.load('85limit/85transition_to_nonlinear_0.5.npy')
+data_7 =  np.load('85limit/85transition_to_nonlinear_0.7.npy')
+data_8 =  np.load('85limit/85transition_to_nonlinear_0.8.npy')
+data_4 =  np.load('85limit/85transition_to_nonlinear_0.4.npy')
+data_45 = np.load('85limit/85transition_to_nonlinear_0.45.npy')
 
 dat_arr = [data_4, data_45, data_5, data_55, data_6, data_65, data_7, data_8]
 fig, ax = plt.subplots(1,3, figsize = (12,6), sharey = True, sharex = False)

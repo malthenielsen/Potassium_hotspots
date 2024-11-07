@@ -80,16 +80,18 @@ stim_alpha = float(sys.argv[1])
 print(stim_alpha, 'Stim alpha')
 ID = int(sys.argv[3])
 
-N_clusters = np.random.poisson(32, 1)
+N_clusters = np.random.poisson(62, 1)
 N_mixed = 0#np.random.poisson(20,1)
+
+tips = [3,4,5,8,9,11,14,15,18,19,21,25,26,27,29,32,35,36,38,44,45,46,49,50,51,55,56,57,61,62,64,66,67,69,70,73,75,76,79,81,82,85,87,88,90,91,93,96,97,99,101,104,106,109,110,111,114,115,119,121,122,125,126,128,129,131,132]
 
 if sys.argv[2] == 'single':
     dend_clust = [-1]
     mixed_clust = []
 else:
-    dend_clust = np.random.choice(np.arange(10,130,1),N_clusters, replace = False)
     mixed_clust = np.random.choice(np.arange(60,120,1),N_mixed, replace = False)
 
+dend_clust = np.random.choice(tips,N_clusters, replace = True)
 #  np.save('dendrite_cluster_loc', dend_clust)
 
 

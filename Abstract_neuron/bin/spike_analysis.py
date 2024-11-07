@@ -54,11 +54,11 @@ def func(path):
 
             if i%3 == 0:
                 #  baseline = np.mean(trunk[i][2500:3000])
-                fig, ax = plt.subplots(1,1, figsize = (7,6))
+                #  fig, ax = plt.subplots(1,1, figsize = (7,6))
             #  trunk_tmp = trunk[i][5000:20000] - baseline
-            plt.plot(trunk[i][:])# - baseline)
-            if i%3 == 2:
-                plt.show()
+            #  plt.plot(trunk[i][:])# - baseline)
+            #  if i%3 == 2:
+                #  plt.show()
 
             #  area = np.trapz(trunk_tmp, dx = .001)
             inds, _ = find_peaks(trunk[i], height = 0)

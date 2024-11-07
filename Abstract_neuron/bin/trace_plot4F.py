@@ -42,11 +42,11 @@ def func(path):
                 baseline = np.mean(trunk[i][3500:4000])
                 fig, ax = plt.subplots(1,1, figsize = (7,6))
             trunk_tmp = trunk[i][5000:30000] - baseline
-            plt.plot(trunk[i][:] - baseline)
+            #  plt.plot(trunk[i][:] - baseline)
             if i%3 == 2:
                 plt.show()
 
-            area = np.trapz(trunk_tmp, dx = 1/40)
+            area = np.trapezoid(trunk_tmp, dx = 1/40)
             bin_.append(area)
         bin_ = np.array(bin_)
         data[:,:,l] = bin_.reshape(N_t,3).T

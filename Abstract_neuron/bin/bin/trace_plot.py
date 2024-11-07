@@ -54,52 +54,54 @@ def func(path):
                 ax[i%3].plot(time, rm(trunk[i][14000:18000], 1), color = plt.cm.cool_r((i//3)/8), lw = 2)
                 cbaxes = inset_axes(ax[0], width="5%", height="200%", loc = 5)
                 plt.colorbar(plt.cm.ScalarMappable(norm = mpl.colors.Normalize(vmin=600, vmax=1200), cmap = 'cool_r'), orientation = 'vertical',cax=cbaxes, label = '$Length$')
-                #  ax.text(-0.1, 1.05, 'E', fontweight = 'bold', transform = ax.transAxes, fontsize = 20)
-                #  if i%3 == 2:
-                #      ax.legend(['No shift', 'Low', 'High'], title = '$\Delta E_k$')
-                #      ax.set(xlabel = 'Time[AU]', ylabel = 'Trunk Vm minus baseline')
-                #      #  ax.set_xticks([])
-                #      #  ax.set_yticks([])
-                #      #  plt.savefig('AOC_plot', dpi = 200)
-                #  plt.savefig('FIG_4E_CB.svg', dpi = 400)
-                #  plt.savefig('FIG_4E_CB.pdf', dpi = 400)
-                #  plt.show()
+    plt.show()
+                ax.text(-0.1, 1.05, 'E', fontweight = 'bold', transform = ax.transAxes, fontsize = 20)
+                if i%3 == 2:
+                    ax.legend(['No shift', 'Low', 'High'], title = '$\Delta E_k$')
+                    ax.set(xlabel = 'Time[AU]', ylabel = 'Trunk Vm minus baseline')
+                    #  ax.set_xticks([])
+                    #  ax.set_yticks([])
+                    #  plt.savefig('AOC_plot', dpi = 200)
+                plt.savefig('FIG_4E_CB.svg', dpi = 400)
+                plt.savefig('FIG_4E_CB.pdf', dpi = 400)
+                plt.show()
 
 
-                #  exit()
+                exit()
 
-    #      data[:,:,l] = np.array(bin_).reshape(8,3).T
-    #
-    #  t_test = np.zeros((2,8))
-    #  residuals_arr = np.zeros((2,8,len(fnames_soma)))
-    #  T_large = np.zeros(2)
-    #  R_val = np.zeros(2)
-    #
-    #
-    #  for i in range(8):
-    #      for j in range(2):
-    #          residuals = np.diff(data[[0,j+1], i, :], axis = 0).ravel()
-    #          residuals_arr[j,i,:] = residuals
-    #          sdom = np.std(residuals, ddof = 1)/np.sqrt(len(residuals))
-    #          t = np.mean(residuals) / sdom
-    #          #  print(stats.t.sf(t, len(residuals)-1))
-    #          t_test[j,i] = stats.t.sf(t, len(residuals)-1)
-    #  for i in range(2):
-    #      residuals = residuals_arr[i,:,:].ravel()
-    #      sdom = np.std(residuals, ddof = 1)/np.sqrt(len(residuals))
-    #      t = np.mean(residuals) / sdom
-    #      T_large[i] = stats.t.sf(t, len(residuals)-1)
-    #      R_val[0] = t
-    #      R_val[1] = len(residuals)-1
-    #  mean = np.mean(data, axis = 2)
-    #  eom = np.std(data, axis = 2)/np.sqrt(data.shape[2])
-    #  return mean, eom, t_test, residuals_arr, T_large, R_val
+        data[:,:,l] = np.array(bin_).reshape(8,3).T
 
-#  paths = ['./new_tt/*.npy']#,
-paths = ['./folder_trunk_test/']#,
+    t_test = np.zeros((2,8))
+    residuals_arr = np.zeros((2,8,len(fnames_soma)))
+    T_large = np.zeros(2)
+    R_val = np.zeros(2)
+
+
+    for i in range(8):
+        for j in range(2):
+            residuals = np.diff(data[[0,j+1], i, :], axis = 0).ravel()
+            residuals_arr[j,i,:] = residuals
+            sdom = np.std(residuals, ddof = 1)/np.sqrt(len(residuals))
+            t = np.mean(residuals) / sdom
+            #  print(stats.t.sf(t, len(residuals)-1))
+            t_test[j,i] = stats.t.sf(t, len(residuals)-1)
+    for i in range(2):
+        residuals = residuals_arr[i,:,:].ravel()
+        sdom = np.std(residuals, ddof = 1)/np.sqrt(len(residuals))
+        t = np.mean(residuals) / sdom
+        T_large[i] = stats.t.sf(t, len(residuals)-1)
+        R_val[0] = t
+        R_val[1] = len(residuals)-1
+    mean = np.mean(data, axis = 2)
+    eom = np.std(data, axis = 2)/np.sqrt(data.shape[2])
+    return mean, eom, t_test, residuals_arr, T_large, R_val
+
+paths = ['./new_tt/*.npy']#,
+#  paths = ['./folder_trunk_test/']#,
         # './no_cluster/*.npy']
 trunk_lenghts = np.arange(100,900,100) + 300
 
+#  func(paths[0])
 mean, eom, t_test, residuals, T_large, R_val = func(paths[0])
 #  mean_n, eom_n, t_test, residuals, T_large, R_val = func(paths[1])
 

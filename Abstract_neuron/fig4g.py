@@ -77,7 +77,8 @@ def func(path):
 #paths = ['./trunk_test_scaled/current_large/folder_trunk_test/']#,
 #  paths = ['./scaled/jan/']#,
 #  paths = ['./scaled/length_VM_AOC/']#,
-paths = ['./VM_length/']#,
+#  paths = ['./VM_length/']#,
+paths = ['./Data_4fg/']#,
 #  paths = ['./aoc4F/test/trace/']#,
         # './no_cluster/*.npy']
 #  trunk_lenghts = np.arange(100,1000,100) + 300
