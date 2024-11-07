@@ -10,7 +10,7 @@ def load_data(kind, angle, sur):
     del_arr = []
     w_arr = []
     for i in range(10):
-        V_arr.append(np.load(f'85data_{i}_{kind}_{angle}_{sur}.npy'))
+        V_arr.append(np.load(f'traces_2B/85data_{i}_{kind}_{angle}_{sur}.npy'))
 
 
     V_arr = np.vstack(V_arr)

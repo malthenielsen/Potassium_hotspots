@@ -30,11 +30,11 @@ print(dek)
 #  data_75 = np.load('./res_2024/res_0.75_8_2024.npy')
 #  data_80 = np.load('./res/res_0.8_8_301.npy')
 #  data_85 = np.load('./res/res_0.85_8_301.npy')
-fnames = glob.glob('Nresnew/*')
+fnames = glob.glob('limit_dir_illu/Nres/*')
 img = []
 val = []
 for fname in fnames:
-    val.append(float(fname.split('_')[1]))
+    val.append(float(fname.split('_')[3]))
     img.append(np.load(fname))
 
 key = np.argsort(val)

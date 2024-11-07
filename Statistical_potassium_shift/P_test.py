@@ -28,16 +28,15 @@ res_p = np.hstack(res_p)
 #  plt.show()
 
 def tuning_vm(arr, s = .3, shift = 0):
-    shift = np.radians(shift)*2 #von mises is for the full circle we only look at the half
-    kappa = 1/np.power(np.deg2rad(s)*2, 2) # relation from kappa to std is std**2 = 1/k
-    #  print(kappa, 'kappa')
+    shift = np.radians(shift)*2
+    kappa = 1/np.power(np.deg2rad(s)*2, 2)
     arr_r = np.linspace(-np.pi,np.pi, 100)
     val = stats.vonmises.pdf(np.deg2rad(arr), kappa, loc = 0 + shift)
     val_r = stats.vonmises.pdf(arr_r, kappa, loc = 0 + shift)
     return val / np.max(val_r)
 
 arr = np.linspace(-90, 90, 1000)
-plt.plot(arr, tuning_vm(arr, 11, 0))
+#  plt.plot(arr, tuning_vm(arr, 11, 0))
 #  print(tuning_vm([2, 80], 11, 0))
 #  rvs = stats.vonmises.rvs(kappa = 1/np.sqrt(np.deg2rad(13)/2), size = 10)
 #  plt.scatter(rvs, stats.vonmises.pdf(rvs, kappa = 1/np.sqrt(np.deg2rad(13)/2)))

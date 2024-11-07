@@ -12,14 +12,14 @@ def load_data(kind, angle, k_max):
         #  data = np.load(f'./EK_effect/EK_effect/no_noise_clamp_data_{i}_{kind}_{angle}_{k_max}.npy', allow_pickle = True)
         #  data = np.load(f'./EK_short/no_noise_clamp_data_{i}_{kind}_{angle}_{k_max}.npy', allow_pickle = True)
         #  data = np.load(f'./EK_effect/no_noise_clamp_data_{i}_{kind}_{angle}_{k_max}.npy', allow_pickle = True)
-        data = np.load(f'./EK_old/85no_noise_clamp_data_{i}_{kind}_{angle}_{k_max}.npy', allow_pickle = True)
+        data = np.load(f'./EK_width/85no_noise_clamp_data_{i}_{kind}_{angle}_{k_max}.npy', allow_pickle = True)
         V = data.item().get('V')
         RT = data.item().get('RT')
-        plt.plot(V[::10])
+        #  plt.plot(V[::10])
         V_arr.append(V[::10])
         del_arr.append(data.item().get('delays'))
         w_arr.append(data.item().get('EK'))
-    plt.show()
+    #  plt.show()
     V_arr = np.vstack(V_arr)
     return V_arr,del_arr,w_arr, RT[::10],
 

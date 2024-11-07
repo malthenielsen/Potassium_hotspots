@@ -591,14 +591,14 @@ def IV_plot(Vrs, Ek):
         #  print(i)
     Sav[:, 0] = Vrs
 
-    np.save(f'../1D_flow/IV_data_EK{Ek}', Sav)
+    #  np.save(f'../1D_flow/IV_data_EK{Ek}', Sav)
 
 #  Vs = np.linspace(-80, -70, 20)
 #  for i in Vs:
 #      IV_plot(Vrs, i)
 
 
-IV_plot(Vrs, -80)
+#  IV_plot(Vrs, -80)
 #  IV_plot(Vrs, -78)
 #  IV_plot(Vrs, -74)
-IV_plot(Vrs, -64)
+#  IV_plot(Vrs, -64)

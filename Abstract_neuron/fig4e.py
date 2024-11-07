@@ -71,9 +71,9 @@ def func(path):
 
 #  paths = ['./new_tt/*.npy']#,
 #paths = ['./trunk_test_scaled/current_large/folder_trunk_test/']#,
-paths = ['./scaled/jan/']#,
-paths = ['../gain/VM_tuning']#,
-paths = ['./scaled/tuning_VM_17']#,
+#  paths = ['./scaled/jan/']#,
+#  paths = ['../gain/VM_tuning']#,
+#  paths = ['./scaled/tuning_VM_17']#,
 paths = ['./length_tuning/']
 #  paths = ['./aoc4F/test/trace/']#,
         # './no_cluster/*.npy']

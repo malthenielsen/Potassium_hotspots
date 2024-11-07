@@ -5,7 +5,6 @@ from scipy.signal import find_peaks
 from scipy.optimize import curve_fit
 from scipy import stats
 from iminuit import Minuit
-import matplotlib.gridspec as gridspec
 
 
 from appstatpy.ExternalFunctions import *
@@ -24,7 +23,7 @@ def run(path):
         #  plt.show()
         #  plt.plot(data[i,:])
         #  ax[i%3].plot(data[i,:])
-        inds,_ = find_peaks(data[i,:], height = 0)
+        inds,_ = find_peaks(data[i,:], height = 40)
         #  inds,_ = find_peaks(data[i,:], height = -10)
         #  ax[i%3].scatter(inds, data[i,inds])
         length = np.max(np.where(~np.isnan(data[i,:]))[0])
@@ -42,20 +41,7 @@ def run(path):
 
 
 x_val = np.linspace(0,1,22)
-#  fig, ax = plt.subplots(1,1, figsize = (8,6))
-
-fig = plt.figure(figsize=(7, 5))  # Adjust the figure size as needed
-
-# Create a GridSpec with 1 row and 3 columns (2+1=3 to get the width ratio of 2:1)
-gs = gridspec.GridSpec(1, 3)
-
-# Create the first subplot (twice the width)
-ax1 = fig.add_subplot(gs[0, 0:2])  # This occupies the first two columns
-ax1.set_title('Window 1 (2x width)')
-
-# Create the second subplot (normal width)
-ax2 = fig.add_subplot(gs[0, 2])  # This occupies the third column
-ax2.set_title('Window 2 (1x width)')
+fig, ax = plt.subplots(1,1, figsize = (3,4.5))
 #  colors = ['tab:green', 'tab:red', 'tab:blue']
 colors = ['darkgrey', 'dodgerblue', 'goldenrod']
 high = np.zeros((15,22))
@@ -64,10 +50,10 @@ lowi = np.zeros((15,22))
 
 for i in range(15):
     #  path = f'dataL5PC/dataL5PC/soma_{i}.npy'
-    path = f'data_weight/soma_{i}.npy'
+    #  path = f'data_weight/soma_{i}.npy'
     #  path = f'data_weight_high/data_weight/soma_{i}.npy'
     #  path = f'data/data/soma_{i}.npy'
-    #  path = f'dataSUPP/AUG/soma_{i}.npy'
+    path = f'data4B/data/soma_{i}.npy'
     #  path = f'data_weight/data_weight/soma_{i}.npy'
     #  path = f'gain/hight_weight/soma_{i}.npy'
     #  path = f'data/SKv3/soma_{i}.npy'
@@ -84,64 +70,43 @@ def sigmoid(x, xoff, b, MAX):
     return MAX* 1/(1 + np.exp(b*(x - xoff)))
 
 
-#  angles = np.linspace(0,25,20)
-angles = np.linspace(0,35,18)
+angles = np.linspace(0,30,18)
 angles = np.append(angles, np.array([40, 50, 75, 90]))
+#  angles = np.linspace(0,25,9)
+#  angles = np.append(angles, np.array([30, 50, 90]))
+
+#  ax.plot(angles, sigmoid(angles, 40, 0.2, 0.04))
+#  plt.show()
+
 con_angles = np.linspace(0,90,100)
 
 p0, _ = curve_fit(sigmoid, angles, np.nanmean(high,axis=0), p0 = [20, 0.2, 10])
-ax1.plot(con_angles, sigmoid(con_angles, *p0), color = colors[0])
+ax.plot(con_angles, sigmoid(con_angles, *p0), color = colors[0])
 p0, _ = curve_fit(sigmoid, angles, np.nanmean(medi,axis=0), p0 = [20, 0.2, 10])
-ax1.plot(con_angles, sigmoid(con_angles, *p0), color = colors[1])
+ax.plot(con_angles, sigmoid(con_angles, *p0), color = colors[1])
 p0, _ = curve_fit(sigmoid, angles, np.nanmean(lowi,axis=0), p0 = [20, 0.2, 10])
-ax1.plot(con_angles, sigmoid(con_angles, *p0), color = colors[2])
+ax.plot(con_angles, sigmoid(con_angles, *p0), color = colors[2])
 
-ax1.errorbar(angles, np.nanmean(lowi, axis = 0), yerr = np.nanstd(fps, axis = 1)/np.sqrt(10), ls = '', capsize = 5, color = colors[2], label = 'High ')
-ax1.scatter(angles, np.nanmean(lowi, axis = 0), color = colors[2])
+ax.errorbar(angles, np.nanmean(lowi, axis = 0), yerr = np.nanstd(fps, axis = 1)/np.sqrt(10), ls = '', capsize = 5, color = colors[2], label = 'High ')
+#  ax.scatter(angles, np.nanmean(lowi, axis = 0), color = colors[2])
 
-ax1.errorbar(angles, np.nanmean(medi, axis = 0), yerr = np.nanstd(fps, axis = 1)/np.sqrt(10), ls = '', capsize = 5, color = colors[1], label = 'Low ')
-ax1.scatter(angles, np.nanmean(medi, axis = 0), color = colors[1])
+ax.errorbar(angles, np.nanmean(medi, axis = 0), yerr = np.nanstd(fps, axis = 1)/np.sqrt(10), ls = '', capsize = 5, color = colors[1], label = 'Low ')
+#  ax.scatter(angles, np.nanmean(medi, axis = 0), color = colors[1])
 
-ax1.errorbar(angles, np.nanmean(high, axis = 0), yerr = np.nanstd(fps, axis = 1)/np.sqrt(10), ls = '', capsize = 5, color = colors[0], label = 'None ')
-ax1.scatter(angles, np.nanmean(high, axis = 0), color = colors[0])
+ax.errorbar(angles, np.nanmean(high, axis = 0), yerr = np.nanstd(fps, axis = 1)/np.sqrt(10), ls = '', capsize = 5, color = colors[0], label = 'None ')
+#  ax.scatter(angles, np.nanmean(high, axis = 0), color = colors[0])
 
 #  ax.legend(title ='$\Delta E_K$')
 
 #  ax.set(xlabel = 'Tuning angle [deg]', ylabel = 'Firing freq [AU]', title = 'L5PC Neuron')
-#  ax1.set_xticks([0, 22.5, 45, 67.5, 90], [0, 22.5, 45, 67.5, 90])
-ax1.legend(title = r'$\Delta E_{K^+}$ shift')
-ax1.set(xlabel = 'Tuning angle [deg]', ylabel = 'Firing frequency [Hz]', title = 'Abstract neuron morphology')
-
-p0, _ = curve_fit(sigmoid, angles, np.nanmean(high,axis=0), p0 = [20, 0.2, 10])
-ax2.plot(con_angles, sigmoid(con_angles, *p0), color = colors[0])
-p0, _ = curve_fit(sigmoid, angles, np.nanmean(medi,axis=0), p0 = [20, 0.2, 10])
-ax2.plot(con_angles, sigmoid(con_angles, *p0), color = colors[1])
-p0, _ = curve_fit(sigmoid, angles, np.nanmean(lowi,axis=0), p0 = [20, 0.2, 10])
-ax2.plot(con_angles, sigmoid(con_angles, *p0), color = colors[2])
-
-ax2.errorbar(angles, np.nanmean(lowi, axis = 0), yerr = np.nanstd(fps, axis = 1)/np.sqrt(10), ls = '', capsize = 5, color = colors[2], label = 'Increase ')
-ax2.scatter(angles, np.nanmean(lowi, axis = 0), color = colors[2])
-
-ax2.errorbar(angles, np.nanmean(medi, axis = 0), yerr = np.nanstd(fps, axis = 1)/np.sqrt(10), ls = '', capsize = 5, color = colors[1], label = 'Initial ')
-ax2.scatter(angles, np.nanmean(medi, axis = 0), color = colors[1])
-
-ax2.errorbar(angles, np.nanmean(high, axis = 0), yerr = np.nanstd(fps, axis = 1)/np.sqrt(10), ls = '', capsize = 5, color = colors[0], label = 'Decrease ')
-ax2.scatter(angles, np.nanmean(high, axis = 0), color = colors[0])
-
-#  ax.legend(title ='$\Delta E_K$')
-
-#  ax.set(xlabel = 'Tuning angle [deg]', ylabel = 'Firing freq [AU]', title = 'L5PC Neuron')
-#  ax2.set_xticks([0, 22.5, 45, 67.5, 90], [0, 22.5, 45, 67.5, 90])
-ax2.legend(title = r'Synaptic weight shift')
-ax2.set(xlabel = 'Tuning angle (deg)', ylabel = 'Firing frequency (Hz)', title = 'L5PC neuron morphology')
-
-ax1.set_xlim(-0.5,30)
-ax2.set_xlim(80,90)
+ax.set_xticks([0, 22.5, 45, 67.5, 90], [0, 22.5, 45, 67.5, 90])
+#  ax.legend(title = r'$\Delta E_{K^+}$ shift')
+#  ax.set(xlabel = 'Tuning angle [deg]', ylabel = 'Firing frequency [Hz]', title = 'Fractal neuron morphology morphology')
+ax.set_xlim(-0.5,25)
 plt.tight_layout()
-fig.savefig('Supp_weight_test.pdf', dpi = 200)
+#  fig.savefig('Supp_weight_test', dpi = 200)=
 #  fig.savefig('SuppF5.svg', dpi = 200)
-#  fig.savefig('4c.pdf', dpi = 300)
-#  plt.close(fig)
+fig.savefig('4c.pdf', dpi = 300)
 
 plt.show()
 
@@ -152,12 +117,16 @@ def fn_mul(x,a):
     return x*a
 
 #  fig, ax = plt.subplots(1,2, figsize = (12,5))
+#
+low_arr = high
+high_arr = lowi
+medi_arr = medi
 
-low = np.nanmean(high, axis =0)
+low =  np.nanmean(high, axis =0)
 high = np.nanmean(lowi, axis =0)
 medi = np.nanmean(medi, axis =0)
 lowi = low
-
+#
 #  p0_high_add, _ = curve_fit(fn_add, lowi, high , p0 = [1])
 #  p0_high_mul, _ = curve_fit(fn_mul, lowi, high , p0 = [1])
 #  p0_medi_add, _ = curve_fit(fn_add, lowi, medi , p0 = [1])
@@ -187,55 +156,120 @@ lowi = low
 #
 #
 #  plt.show()
-
-
+#
+#  def OSI(fps, ori):
+#      print(ori)
+#      ori = np.deg2rad(ori)
+#      denominator = np.sum(fps)
+#      numerator = np.sum(fps * np.exp(2*1j*ori))
+#
+#      #  print(ori)
+#      #  print(numerator)
+#      #  plt.scatter(np.real(numerator), np.imag(numerator))
+#      #  plt.scatter(np.real(np.sum(numerator)), np.imag(np.sum(numerator)))
+#      #  plt.show()
+#      osi = np.abs((numerator)/denominator)
+#      #  print(np.sum(numerator))
+#      print(osi)
+#      return osi
 def OSI(arr, ori):
-    if np.mean(arr) == 0:
-        return np.nan
+    arr2 = arr[::-1]
+    arr = np.append(arr2, arr[1:])
+    ori2 = ori[::-1]*-1
+    ori = np.append(ori2, ori[1:])
+    #  plt.plot(ori, arr)
+    #  plt.show()
     ori = np.deg2rad(ori)
-    #  print(ori, arr)
-    top = np.sum(arr * np.exp(2*1j*ori))
-    F = top/np.sum(arr)
-    return 1  - np.arctan2(np.imag(F), np.real(F))
+    top = np.nansum(arr * np.exp(2*1j*ori))
+    F = np.abs(top)/np.nansum(arr)
+    #  return 1 - np.arctan2(np.imag(F), np.real(F))
+    if np.isnan(F):
+        return np.nan
+    return F
 
-#  #  angles = np.linspace(0,35,18)
-#  #  angles = np.append(angles, np.array([40,50,75,90]))
-#  fig, ax = plt.subplots(figsize = (5,6))
-#  ax2 = ax.twinx()
-#  #  color = ['teal', 'goldenrod', 'teal', '#75151E','#0047AB' ]
-#  ls = ['solid', '--', '-.', ':', (0,(1,10))]
-#  labels = ['50/50', '75/25', '25/75', '0/100', '100/0']
-#  paths = [lowi, medi, high]
-#  OSI_arr = np.zeros(3)
-#  max_arr = np.zeros(3)
-#
-#  for idx , path in enumerate(paths):
-#      #  means, data = func(path)
-#      #  for i in range(3):
-#      OSI_arr[idx] = OSI(path, angles)
-#      max_arr[idx] = path[0]
-#  x_arr = np.arange(3)
-#  ax2.scatter(x_arr, OSI_arr, color = 'slategrey')
-#  ax2.plot(x_arr, OSI_arr, color = 'slategrey', label = labels[idx])
-#  ax.scatter(x_arr, max_arr, color = 'black')
-#  ax.plot(x_arr, max_arr, color = 'black')
-#      #  ax2.scatter(x_arr, fwhm, ls = ls[idx], color = 'red')
-#      #  ax2.plot(x_arr,    fwhm, ls = ls[idx], color = 'red')
-#      #  print(means[:,0])
-#      #  print(idx)
-#  ax2.set_ylim(0,1)
-#  ax.set_ylim(0,45)
-#  #  ax2.set_ylim(0,1)
-#  #  ax.set_ylim(11,13.5)
-#  ax.set_ylabel('Peak firing rate (spikes/s)', color = 'black')
-#  ax2.set_ylabel('Orientation sensitivity Index', color = 'slategrey')
-#  ax2.set_xticks([0,1,2],['None', r'Low', r'High'] , rotation = 30)
-#  plt.tight_layout()
-#  fig.savefig('OSI', dpi =  400)
+#  def OSI(arr, ori):
+#      if np.mean(arr) == 0:
+#          return np.nan
+#      #  ori = np.deg2rad(ori)
+#      #  top = np.nansum(arr * np.exp(2*1j*ori))
+#      #  F = top/np.nansum(arr)
 #
 #
+#      angles_rad = np.deg2rad(ori)
+#      #  print(np.cos(angles_rad))
+#      print(arr)
+#
+#      # Compute the numerator of the OSI formula
+#      vector_x = np.nansum(arr * np.cos(angles_rad))
+#      vector_y = np.nansum(arr * np.sin(angles_rad))
+#      numerator = np.sqrt(vector_x**2 + vector_y**2)
+#
+#      # Compute the denominator of the OSI formula
+#      denominator = np.nansum(arr)
+#
+#      # Calculate the OSI
+#      osi = numerator / denominator
+#      print(osi)
+#
+#      #  return np.abs(F)
+#      return osi
+    #  print(1 - np.arctan2(np.real(F), np.imag(F)))
+    #  return 1 - np.arctan2(np.real(F), np.imag(F))
+
+#  angles = np.linspace(0,35,18)
+#  angles = np.append(angles, np.array([40,50,75,90]))
+
+fig, ax = plt.subplots(figsize = (5,6))
+ax2 = ax.twinx()
+#  color = ['teal', 'goldenrod', 'teal', '#75151E','#0047AB' ]
+ls = ['solid', '--', '-.', ':', (0,(1,10))]
+labels = ['50/50', '75/25', '25/75', '0/100', '100/0']
+paths = [low_arr, medi_arr, high_arr]
+OSI_arr = np.zeros((len(low_arr),3))
+max_arr = np.zeros((len(low_arr),3))
+N = np.sqrt(len(low_arr))
+
+#  plt.plot(angles, lowi)
+#  plt.plot(angles, medi)
+#  plt.plot(angles, high)
+#  print(OSI(lowi, angles))
+#  print(OSI(medi, angles))
+#  print(OSI(high, angles))
 #  plt.show()
+#  exit()
 
+for idx , path in enumerate(paths):
+    #  means, data = func(path)
+    #  for i in range(3):
+    for i in range(len(path)):
+        OSI_arr[i,idx] = OSI(path[i], angles)
+        max_arr[i,idx] = path[i][0]
+    #  plt.show()
+x_arr = np.arange(3)
+#  ax2.scatter(x_arr, OSI_arr, color = 'slategrey')
+print(np.nanmean(OSI_arr, axis = 0))
+ax2.errorbar(x_arr, np.nanmean(OSI_arr, axis =0), yerr = np.nanstd(OSI_arr, axis =0)/N, color = 'slategrey')
+ax2.plot(x_arr, np.nanmean(OSI_arr, axis = 0), color = 'slategrey', label = labels[idx])
+#  ax.scatter(x_arr, max_arr, color = 'black')
+ax.errorbar(x_arr, np.nanmean(max_arr, axis = 0), yerr = np.nanstd(max_arr, axis = 0)/N, color = 'black')
+ax.plot(x_arr, np.nanmean(max_arr, axis = 0), color = 'black')
+    #  ax2.scatter(x_arr, fwhm, ls = ls[idx], color = 'red')
+    #  ax2.plot(x_arr,    fwhm, ls = ls[idx], color = 'red')
+    #  print(means[:,0])
+    #  print(idx)
+ax2.set_ylim(0,1)
+ax.set_ylim(0,25)
+#  ax2.set_ylim(0,1)
+#  ax.set_ylim(11,13.5)
+ax.set_ylabel('Peak firing rate (spikes/s)', color = 'black')
+ax2.set_ylabel('Orientation sensitivity Index', color = 'slategrey')
+ax2.set_xticks([0,1,2],['None', r'Low', r'High'] , rotation = 30)
+plt.tight_layout()
+fig.savefig('OSI.pdf', dpi =  400)
+
+plt.show()
+
+#  exit()
 def fn(FRA, FRB, eFRB, eFRA):
     mask = FRA > 0
     fig1, ax = plt.subplots(1,2, figsize  = (14,6))
@@ -298,7 +332,7 @@ def fn(FRA, FRB, eFRB, eFRA):
     ax3.set(xlabel = 'Firing rate before (spikes/s)', ylabel = 'Firing rate after (spikes/s)', title = 'Fit to data')
     ax1.legend()
     ax3.legend()
-    #  fig1.savefig('S6new.png', dpi = 300)
-    #  plt.show()
+    fig1.savefig('S6new.png', dpi = 300)
+    plt.show()
 
 fn(low, medi, np.nanstd(fps, axis = 1)/np.sqrt(10), np.nanstd(fps, axis = 1)/np.sqrt(10))

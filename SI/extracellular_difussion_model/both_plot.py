@@ -3,26 +3,26 @@ from matplotlib import pyplot as plt
 plt.style.use('K_PAPER')
 
 
-data1 = np.load('data_night/measure_NAK_night_19_300_0_0.npy')
-data2 = np.load('data_night/measure_NAK_night_29_300_0_0.npy')
-data3 = np.load('data_night/measure_NAK_night_39_300_0_0.npy')
-data1in = np.load('measure_NAK_inn_19_300_0.npy')
-data2in = np.load('data_cell/80measure_NAK_inn_29_300_0.npy')
-data3in = np.load('measure_NAK_inn_39_300_0.npy')
+data1 = np.load('data/measure_NAK_night_19_300_0_0.npy')
+data2 = np.load('data/measure_NAK_night_29_300_0_0.npy')
+data3 = np.load('data/measure_NAK_night_39_300_0_0.npy')
+data1in = np.load('data/local_data/measure_NAK_inn_19_300_0.npy')
+data2in = np.load('data/local_data/measure_NAK_inn_29_300_0.npy')
+data3in = np.load('data/local_data/measure_NAK_inn_39_300_0.npy')
 
-data_null_1 = np.load('measure_NAK_new_19_300_none.npy')
-data_null_2 = np.load('measure_NAK_new_29_300_none.npy')
-data_null_3 = np.load('measure_NAK_new_39_300_none.npy')
-data_null_1in = np.load('measure_NAK_inn_19_300_none.npy')
-data_null_2in = np.load('measure_NAK_inn_29_300_none.npy')
-data_null_3in = np.load('measure_NAK_inn_39_300_none.npy')
+data_null_1 = np.load('data/local_data/measure_NAK_new_19_300_none.npy')
+data_null_2 = np.load('data/local_data/measure_NAK_new_29_300_none.npy')
+data_null_3 = np.load('data/local_data/measure_NAK_new_39_300_none.npy')
+data_null_1in = np.load('data/local_data/measure_NAK_inn_19_300_none.npy')
+data_null_2in = np.load('data/local_data/measure_NAK_inn_29_300_none.npy')
+data_null_3in = np.load('data/local_data/measure_NAK_inn_39_300_none.npy')
 
-data_all_1 = np.load('measure_NAK_new_19_300_all.npy')
-data_all_2 = np.load('measure_NAK_new_29_300_all.npy')
-data_all_3 = np.load('measure_NAK_new_39_300_all.npy')
-data_all_1in = np.load('measure_NAK_inn_19_300_all.npy')
-data_all_2in = np.load('measure_NAK_inn_29_300_all.npy')
-data_all_3in = np.load('measure_NAK_inn_39_300_all.npy')
+data_all_1 = np.load('data/local_data/measure_NAK_new_19_300_all.npy')
+data_all_2 = np.load('data/local_data/measure_NAK_new_29_300_all.npy')
+data_all_3 = np.load('data/local_data/measure_NAK_new_39_300_all.npy')
+data_all_1in = np.load('data/local_data/measure_NAK_inn_19_300_all.npy')
+data_all_2in = np.load('data/local_data/measure_NAK_inn_29_300_all.npy')
+data_all_3in = np.load('data/local_data/measure_NAK_inn_39_300_all.npy')
 
 #  data3 = np.load('measure_NAK_05_edge.npy')
 data_arr = [data1, data2, data3]
@@ -153,3 +153,5 @@ plt.tight_layout()
 fig.savefig('Temporal_plot_regime', dpi = 400)
 
 plt.show()
+          
+          

@@ -28,5 +28,5 @@ def run(path):
 
 #  path = './trunk_test/length_tuning/soma_1.npy'
 for i in range(15):
-    path = f'dataLOW/data/soma_{i}.npy'
+    path = f'data4B/data/soma_{i}.npy'
     run(path)
