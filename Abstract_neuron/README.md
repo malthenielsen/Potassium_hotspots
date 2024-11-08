@@ -18,7 +18,7 @@ different orientations. The test is ran multiple times to generate many
 different versions of the neuron. To plot the data and analyse the result, use
 the tuning scripts found in the folder "Angles_cluster" 
 
--Trunk_length_test.py
+- Trunk_length_test.py
 Similar to the fractal_neuron.py, main difference that orientation is always at
 target preffered orientation, and instead we test the neuron with different
 trunk lengths
