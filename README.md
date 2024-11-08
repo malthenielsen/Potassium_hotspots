@@ -24,14 +24,14 @@ usiing nmda_gif.py in the DynSys_neuron folder
 
 
 ## Figure 4.
-Code for the creation  and simulation of the abstract neuron is in the Abstract_neuron folder. To inhibit the neuron with synapses we used the function create_segments.py. From this we created different scripts warrying the weight og the size of the neuron to see how it would addapt. For more details see readme in the abstract neuron folder.
+Code for the creation  and simulation of the abstract neuron is in the Abstract_neuron folder. To populate the neuron with synapses we used the function create_segments.py. 
 Figures was created using the scripts carrying the label of the subfigure
 
 
 ## SI
 * S1 - S5 is created with similar methods as figure 2, thus the files generating these plots are found in Point dendrite folder
 * S6 is created using the L5PC morphology, found in its own subfolder
-* S7 and S8 was created using SI7-8.py in the abstract_neuron_folder
+* S7 and S8 was created using SI7-8.py in the abstract_neuron folder
 * S11 is created using the AllK_diffusion.py and plotted with both_plot.py
 * S10, S12 and S13 is generated using EK_diffusion.py and plotted with plot_EK.py
 * S14 is generated using S14_fig.py
